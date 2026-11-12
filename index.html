@@ -2,306 +2,167 @@
 <title>Thuisscherm</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;600&family=Inter:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500&family=Inter+Tight:wght@400;500;600&display=swap">
 <style>
-/* Layout: wandscherm voor een liggende tablet. Huis + energiestroom als hoofdkaart links,
-   rechts twee kolommen met kachel/printer en weer/agenda. Valt terug naar 2 en 1 kolom. */
+/* Instrument: een meetpaneel. Grafiet, dunne lijnen, monospaced cijfers, één amber accent.
+   Indeling: energie links over twee rijen, rechts kachel/weer en printer/agenda. Ultrawide: vier kolommen. */
 :root{
-  --bg:#0e141b; --surface:#151e28; --surface-2:#1d2834; --line:#26323f;
-  --fg:#e9eef3; --muted:#8a99a8; --faint:#5b6a79;
-  --sun:#f4b740; --batt:#3fcf9a; --grid:#7c9cff; --heat:#ff7a45; --cool:#5cc8ff; --print:#c49bff;
-  --ok:#3fcf9a; --warn:#f4b740; --bad:#ff6b6b;
-  --f-display:"Sora",ui-sans-serif,system-ui,sans-serif;
-  --f-body:"Inter",ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;
-  --r:20px;
+  --bg:#0b0c0e; --panel:#101215; --line:#23262a; --line-2:#1b1e22; --key:#16191c; --key-line:#33373c;
+  --fg:#f2f3f4; --text:#d6d9dd; --muted:#7b828b; --faint:#4f555c;
+  --amber:#ffb000; --green:#43d17a; --blue:#4a8df0; --red:#ff5d5d;
+  --f-mono:"JetBrains Mono",ui-monospace,"SF Mono",Consolas,monospace;
+  --f-ui:"Inter Tight","Inter",ui-sans-serif,system-ui,sans-serif;
   color-scheme:dark;
 }
-@media (prefers-color-scheme: light){
-  :root:not([data-theme="dark"]){
-    --bg:#e9eef2; --surface:#f8fafb; --surface-2:#eef2f5; --line:#d9e0e6;
-    --fg:#15202a; --muted:#5d6b78; --faint:#94a1ad;
-    --sun:#d48a00; --batt:#119a6a; --grid:#4362e0; --heat:#e3561f; --cool:#0f8fca; --print:#8a55e6;
-    --ok:#119a6a; --warn:#c07c00; --bad:#d63c3c;
-    color-scheme:light;
-  }
-}
-:root[data-theme="light"]{
-  --bg:#e9eef2; --surface:#f8fafb; --surface-2:#eef2f5; --line:#d9e0e6;
-  --fg:#15202a; --muted:#5d6b78; --faint:#94a1ad;
-  --sun:#d48a00; --batt:#119a6a; --grid:#4362e0; --heat:#e3561f; --cool:#0f8fca; --print:#8a55e6;
-  --ok:#119a6a; --warn:#c07c00; --bad:#d63c3c;
-  color-scheme:light;
-}
 html,body{height:100%}
-body{background:var(--bg);color:var(--fg);font-family:var(--f-body);font-size:15px;
-  -webkit-font-smoothing:antialiased;-webkit-tap-highlight-color:transparent;user-select:none}
-.wrap{min-height:100%;box-sizing:border-box;padding-block:20px;
-  padding-left:max(20px,env(safe-area-inset-left,0px));padding-right:max(20px,env(safe-area-inset-right,0px));
-  display:grid;grid-template-columns:1.25fr 1fr 1fr;grid-template-rows:auto minmax(0,1fr) minmax(0,1fr);
-  grid-template-areas:"top top top" "house climate weather" "house printer agenda";gap:16px;height:100%}
-.num{font-variant-numeric:tabular-nums}
-.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:18px 20px;
-  min-width:0;min-height:0;display:flex;flex-direction:column;gap:12px;overflow:hidden}
-.card h2{margin:0;font:600 12px/1 var(--f-body);letter-spacing:.09em;text-transform:uppercase;color:var(--muted);
-  display:flex;align-items:center;gap:8px}
-.card h2 .src{margin-left:auto;font-weight:500;letter-spacing:.02em;text-transform:none;color:var(--faint)}
-.dot{width:8px;height:8px;border-radius:50%;background:currentColor;display:inline-block;flex:none}
+body{background:var(--bg);color:var(--text);font:13px/1.4 var(--f-ui);-webkit-font-smoothing:antialiased;user-select:none;-webkit-tap-highlight-color:transparent}
+.wrap{min-height:100%;height:100%;box-sizing:border-box;padding-block:18px 22px;
+  padding-left:max(22px,env(safe-area-inset-left,0px));padding-right:max(22px,env(safe-area-inset-right,0px));
+  display:grid;grid-template-columns:1.45fr 1fr 1fr;grid-template-rows:auto minmax(0,1fr) minmax(0,1fr);gap:12px;
+  grid-template-areas:"top top top" "energy climate weather" "energy printer agenda";
+  background-image:linear-gradient(rgba(255,255,255,.028) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.028) 1px,transparent 1px);background-size:40px 40px}
+.mono,.num{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
 
-/* top */
-.top{grid-area:top;display:flex;align-items:flex-end;gap:24px;flex-wrap:wrap}
-.clock{font:300 clamp(48px,6.4vw,84px)/.9 var(--f-display);letter-spacing:-.03em}
-.date{display:flex;flex-direction:column;gap:4px;padding-bottom:6px}
-.date b{font:600 18px/1.2 var(--f-display)}
-.date span{color:var(--muted)}
-.top-right{margin-left:auto;display:flex;gap:10px;flex-wrap:wrap;align-items:center;padding-bottom:6px}
-.pill{display:inline-flex;align-items:center;gap:7px;padding:7px 12px;border-radius:999px;background:var(--surface);
-  border:1px solid var(--line);font-size:13px;color:var(--muted);white-space:nowrap}
-.pill b{color:var(--fg);font-weight:600}
-.pill.demo{color:var(--warn);border-color:color-mix(in srgb,var(--warn) 40%,var(--line))}
+/* bovenbalk */
+.top{grid-area:top;display:flex;align-items:center;gap:26px;flex-wrap:wrap;padding-bottom:10px;border-bottom:1px solid var(--line);
+  font:500 11px var(--f-ui);letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+.top .clk{font:300 34px/1 var(--f-mono);letter-spacing:0;color:var(--fg)}
+.top .leds{margin-left:auto;display:flex;gap:20px;flex-wrap:wrap}
+.led{display:inline-flex;align-items:center;gap:7px}
+.led i{width:7px;height:7px;border-radius:50%;background:var(--faint)}
+.led.live i{background:var(--green);box-shadow:0 0 8px var(--green)}
+.led.err i{background:var(--red);box-shadow:0 0 8px var(--red)}
+.led.demo{color:var(--faint)}
 
-/* house */
-.house{grid-area:house}
-.house svg.flow{width:100%;flex:1 1 0;min-height:150px;height:100%}
-.flow .lbl{font:600 17px var(--f-display);fill:var(--fg)}
-.flow .sub{font:500 11.5px var(--f-body);fill:var(--muted);letter-spacing:.04em}
-.flow .wall{fill:var(--surface-2);stroke:var(--line);stroke-width:2}
-.flow .roof{fill:var(--surface-2);stroke:var(--line);stroke-width:2}
-.flow .panel{fill:color-mix(in srgb,var(--grid) 28%,var(--surface));stroke:var(--line);stroke-width:1}
-.flow .ground{stroke:var(--line);stroke-width:2}
-.flow .win{fill:color-mix(in srgb,var(--sun) 30%,var(--surface-2))}
-.flow .pipe{fill:none;stroke:var(--line);stroke-width:4;stroke-linecap:round}
-.flow .stream{fill:none;stroke-width:4;stroke-linecap:round;stroke-dasharray:2 12;animation:flow 1.1s linear infinite}
-.flow .stream.rev{animation-direction:reverse}
-.flow .stream.off{opacity:0}
-@keyframes flow{to{stroke-dashoffset:-14}}
-@media (prefers-reduced-motion:reduce){.flow .stream{animation:none;stroke-dasharray:none;opacity:.7}}
-.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
-.stat{background:var(--surface-2);border-radius:14px;padding:10px 12px;display:flex;flex-direction:column;gap:3px;min-width:0}
-.stat span{font-size:11.5px;color:var(--muted);letter-spacing:.03em}
-.stat b{font:600 19px/1.1 var(--f-display)}
-.stat b small{font:500 12px var(--f-body);color:var(--muted);margin-left:2px}
-.curve{width:100%;height:84px;display:block}
-.curve text{font:500 10.5px var(--f-body);fill:var(--faint)}
-.soon{display:flex;gap:8px}
-.soon div{flex:1;border:1px dashed var(--line);border-radius:14px;padding:9px 12px;color:var(--faint);font-size:12.5px;display:flex;align-items:center;gap:8px}
-.soon svg{width:18px;height:18px;flex:none}
+/* panelen */
+.p{background:var(--panel);border:1px solid var(--line);border-radius:3px;padding:14px 16px;display:flex;flex-direction:column;gap:10px;min-width:0;min-height:0;overflow:hidden}
+.p h2{margin:0;display:flex;align-items:center;gap:10px;font:500 11px var(--f-ui);letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+.p h2 .st{margin-left:auto;color:var(--amber)}
+.p h2 .st.ok{color:var(--green)} .p h2 .st.dim{color:var(--muted)}
+.energy{grid-area:energy} .climate{grid-area:climate} .weather{grid-area:weather} .printer{grid-area:printer} .agenda{grid-area:agenda}
 
-/* climate */
-.climate{grid-area:climate}
-.climate .body{display:flex;align-items:center;gap:14px;flex:1;min-height:0}
-.dial{flex:1;min-width:0;max-height:100%;aspect-ratio:1;max-width:220px;position:relative}
-.dial svg{width:100%;height:100%}
-.dial .center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px}
-.dial .set{font:300 clamp(34px,3.6vw,48px)/1 var(--f-display);letter-spacing:-.02em}
-.dial .set sup{font-size:.4em;vertical-align:top;margin-left:2px}
-.dial .now{font-size:12.5px;color:var(--muted)}
-.dial .act{font-size:11.5px;font-weight:600;letter-spacing:.06em;text-transform:uppercase}
-.ctrls{display:flex;flex-direction:column;gap:10px}
-.btn{appearance:none;border:1px solid var(--line);background:var(--surface-2);color:var(--fg);border-radius:16px;
-  width:64px;height:64px;font:300 30px/1 var(--f-display);cursor:pointer;display:grid;place-items:center;transition:transform .1s,background .2s}
-.btn:active{transform:scale(.94)}
-.btn:focus-visible,.chip:focus-visible{outline:2px solid var(--grid);outline-offset:2px}
-.btn.up{color:var(--heat)} .btn.down{color:var(--cool)}
-.chips{display:flex;gap:6px;flex-wrap:wrap}
-.chip{appearance:none;border:1px solid var(--line);background:transparent;color:var(--muted);border-radius:999px;padding:7px 13px;font:500 13px var(--f-body);cursor:pointer}
-.chip[aria-pressed="true"]{background:var(--fg);color:var(--bg);border-color:var(--fg)}
+.ro{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.ro div{padding:9px 12px;border-right:1px solid var(--line);min-width:0}
+.ro div:last-child{border-right:0}
+.ro small{display:block;font:500 10.5px var(--f-ui);letter-spacing:.14em;color:var(--muted)}
+.ro b{display:block;font:300 clamp(26px,2.6vw,40px)/1.15 var(--f-mono);color:var(--fg);white-space:nowrap}
+.ro b u{text-decoration:none;font-size:.38em;color:var(--muted);margin-left:4px}
+.ro em{display:block;font:400 11.5px var(--f-mono);font-style:normal;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+svg text{font-family:var(--f-mono)}
+.sankey{width:100%;height:auto;flex:none;max-height:34%}
+.chartbox{flex:1;min-height:90px;display:flex;flex-direction:column;gap:6px}
+.chartbox svg{width:100%;flex:1;min-height:0}
+.legend{display:flex;gap:18px;flex-wrap:wrap;font:500 10.5px var(--f-ui);letter-spacing:.12em;color:var(--muted)}
 
-/* printer */
-.printer{grid-area:printer}
-.printer .body{display:flex;gap:16px;align-items:center;flex:1;min-height:0}
-.ring{width:108px;height:108px;flex:none;position:relative}
-.ring svg{width:100%;height:100%;transform:rotate(-90deg)}
-.ring .center{position:absolute;inset:0;display:flex;align-items:baseline;justify-content:center;padding-top:38px;box-sizing:border-box;font:600 26px var(--f-display)}
-.ring .center small{font-size:12px;color:var(--muted)}
-.pinfo{display:flex;flex-direction:column;gap:8px;min-width:0;flex:1}
-.pinfo .file{font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.kv{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;font-size:13px}
-.kv span{color:var(--muted)} .kv b{font-weight:600;text-align:right}
-.state{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:999px;font-size:12px;font-weight:600;
-  background:color-mix(in srgb,currentColor 14%,transparent)}
+.cbody{display:flex;align-items:center;gap:16px;flex:1;min-height:0}
+.gauge{height:100%;max-height:220px;aspect-ratio:1;min-width:0;flex:0 1 auto}
+.gauge svg{width:100%;height:100%}
+.ctrl{display:flex;flex-direction:column;gap:8px}
+.key{appearance:none;width:60px;height:44px;border:1px solid var(--key-line);background:var(--key);border-radius:3px;color:var(--fg);
+  font:300 24px/1 var(--f-mono);display:grid;place-items:center;cursor:pointer;transition:background .15s,transform .08s}
+.key:active{transform:scale(.95);background:#1f2327}
+.key:focus-visible,.seg-btn:focus-visible{outline:1px solid var(--amber);outline-offset:2px}
+.tbl{display:grid;grid-template-columns:auto 1fr auto;gap:5px 14px;font:400 12.5px var(--f-mono);color:#aab0b8;align-items:baseline}
+.tbl span{color:var(--muted);font:500 11px var(--f-ui);letter-spacing:.1em;text-transform:uppercase}
+.tbl b{font-weight:500;text-align:right;color:var(--text)}
+.tbl b.a{color:var(--amber)}
+.presets{display:flex;gap:6px;flex-wrap:wrap}
+.seg-btn{appearance:none;border:1px solid var(--key-line);background:transparent;color:var(--muted);border-radius:2px;padding:5px 10px;font:500 10.5px var(--f-ui);letter-spacing:.14em;text-transform:uppercase;cursor:pointer}
+.seg-btn[aria-pressed="true"]{border-color:var(--amber);color:var(--amber)}
 
-/* weather */
-.weather{grid-area:weather}
-.wnow{display:flex;align-items:center;gap:14px}
-.weather .chips{margin-top:-4px}
-.weather .chip{padding:5px 12px}
-.wnow .ico{width:64px;height:64px;flex:none}
-.wnow .t{font:300 clamp(40px,4vw,54px)/1 var(--f-display);letter-spacing:-.02em}
-.wnow .d{display:flex;flex-direction:column;gap:3px;min-width:0}
-.wnow .d b{font-weight:600}
-.wnow .d span{color:var(--muted);font-size:13px}
-.hours{display:grid;grid-template-columns:repeat(6,1fr);gap:4px;text-align:center;font-size:12px}
-.hours div{display:flex;flex-direction:column;align-items:center;gap:4px;color:var(--muted)}
-.hours b{color:var(--fg);font-weight:600;font-size:13.5px}
-.hours svg{width:24px;height:24px}
-.hours .rain{color:var(--cool);font-size:11px;min-height:13px}
-.days{display:flex;flex-direction:column;gap:6px;margin-top:auto}
-.day{display:grid;grid-template-columns:34px 22px 34px 1fr 34px;align-items:center;gap:8px;font-size:13px}
-.day .n{color:var(--muted);text-transform:capitalize}
-.day svg{width:20px;height:20px}
-.day .lo{color:var(--muted);text-align:right}
-.bar{height:6px;border-radius:3px;background:var(--surface-2);position:relative}
-.bar i{position:absolute;top:0;bottom:0;border-radius:3px;background:linear-gradient(90deg,var(--cool),var(--sun))}
+.wx svg{width:100%;flex:1;min-height:0}
+.wxline{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;font:500 11px var(--f-ui);letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.wxnow{display:flex;align-items:baseline;gap:12px}
+.wxnow b{font:300 40px/1 var(--f-mono);color:var(--fg)}
+.wxnow span{color:var(--text)}
 
-/* agenda */
-.agenda{grid-area:agenda}
-.alist{display:flex;flex-direction:column;gap:6px;overflow:auto;min-height:0}
-.aday{font:600 12px var(--f-body);color:var(--muted);letter-spacing:.04em;margin-top:6px}
-.aday:first-child{margin-top:0}
-.ev{display:grid;grid-template-columns:52px 4px 1fr;gap:10px;align-items:center;padding:8px 10px;border-radius:12px;background:var(--surface-2)}
-.ev .tm{font-size:13px;font-weight:600}
-.ev .tm small{display:block;font-weight:400;color:var(--muted);font-size:11.5px}
-.ev i{align-self:stretch;border-radius:2px}
-.ev .tt{font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
-.ev .tt small{display:block;color:var(--muted);font-size:12px}
-.ev.past{opacity:.45}
-.empty{color:var(--faint);font-size:13px}
+.pbig{display:flex;align-items:baseline;gap:12px}
+.pbig b{font:300 46px/1 var(--f-mono);color:var(--fg)}
+.pbig b u{text-decoration:none;font-size:18px;color:var(--muted)}
+.bars{display:grid;grid-template-columns:repeat(40,1fr);gap:2px;height:16px}
+.bars i{background:#22262a} .bars i.on{background:var(--amber)}
+.file{margin-top:auto;font:400 12px var(--f-mono);color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 
+.ag{display:grid;grid-template-columns:62px minmax(0,1fr);overflow:auto;min-height:0}
+.ag > div{padding:6px 0;border-bottom:1px solid var(--line-2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ag .t{font:400 12.5px var(--f-mono);color:var(--muted);text-transform:uppercase}
+.ag .ti{font-size:13.5px;color:var(--text)}
+.ag .ti small{color:var(--muted);margin-left:6px}
+.ag .past{color:var(--faint)!important}
+.ag .now{grid-column:1/-1;height:0;border:0;border-top:1px solid var(--amber);position:relative;margin:3px 0;padding:0;overflow:visible}
+.ag .now span{position:absolute;right:0;top:-8px;background:var(--panel);padding-left:6px;font:500 10px var(--f-mono);color:var(--amber);letter-spacing:.1em}
+.ag .dayh{grid-column:1/-1;font:500 10.5px var(--f-ui);letter-spacing:.16em;text-transform:uppercase;color:var(--amber);padding:10px 0 4px;border-bottom:1px solid var(--line)}
+.empty{color:var(--faint)}
 
-/* ultrawide: alles naast elkaar in vier kolommen */
-.wrap[data-layout="ultra"]{grid-template-columns:1.35fr 1fr 1fr 1fr;grid-template-rows:auto minmax(0,1fr) minmax(0,1fr);height:100%;
-  grid-template-areas:"top top top top" "house climate weather agenda" "house printer weather agenda"}
-.wrap[data-layout="ultra"] .days{margin-top:16px}
-.wrap[data-layout="ultra"] .weather .hours{margin-top:8px}
+/* ultrawide */
+.wrap[data-layout="ultra"]{grid-template-columns:1.5fr 1fr 1fr 1fr;grid-template-areas:"top top top top" "energy climate weather agenda" "energy printer weather agenda"}
+/* tablet staand en telefoon */
+@media (max-width:1000px){
+  .wrap{height:auto;grid-template-columns:1fr 1fr;grid-template-rows:auto;grid-template-areas:"top top" "energy energy" "climate weather" "printer agenda"}
+  .chartbox{min-height:200px} .wx{min-height:260px}
+}
+@media (max-width:640px){
+  .wrap{grid-template-columns:minmax(0,1fr);grid-template-areas:"top" "energy" "climate" "weather" "printer" "agenda";
+    padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+  .ro{grid-template-columns:repeat(2,minmax(0,1fr))} .ro div:nth-child(2){border-right:0} .ro div:nth-child(-n+2){border-bottom:1px solid var(--line)}
+  .top .leds{margin-left:0}
+}
 body.part{display:flex;height:100%}
 body.part .wrap{flex:none}
-@media (max-width:1100px){
-  .wrap{grid-template-columns:1fr 1fr;grid-template-rows:auto;height:auto;
-    grid-template-areas:"top top" "house house" "climate weather" "printer agenda"}
-  .house svg.flow{max-height:360px}
-}
-@media (max-width:680px){
-  .wrap{grid-template-columns:minmax(0,1fr);grid-template-areas:"top" "house" "climate" "weather" "printer" "agenda";
-    padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
-  .stats{grid-template-columns:repeat(2,1fr)}
-  .top-right{margin-left:0}
-}
 </style>
 
 <div class="wrap" id="app">
   <header class="top">
-    <div class="clock num" id="clock">--:--</div>
-    <div class="date"><b id="date">&nbsp;</b><span id="greet">&nbsp;</span></div>
-    <div class="top-right" id="pills"></div>
+    <span class="clk" id="clock">--:--</span><span id="date"></span><span id="place"></span>
+    <div class="leds" id="leds"></div>
   </header>
 
-  <section class="card house" aria-label="Huis en energie">
-    <h2><span class="dot" style="color:var(--sun)"></span>Huis &amp; energie<span class="src" id="src-energy"></span></h2>
-    <svg class="flow" viewBox="0 0 560 290" role="img" aria-label="Energiestroom tussen zon, accu, net en huis">
-      <!-- leidingen -->
-      <path class="pipe" id="p-sun" d="M110 92 C170 92 200 104 236 124"/>
-      <path class="pipe" id="p-grid" d="M92 224 L206 224"/>
-      <path class="pipe" id="p-batt" d="M354 224 L452 224"/>
-      <path class="stream" id="s-sun" d="M110 92 C170 92 200 104 236 124" style="stroke:var(--sun)"/>
-      <path class="stream" id="s-grid" d="M92 224 L206 224" style="stroke:var(--grid)"/>
-      <path class="stream" id="s-batt" d="M354 224 L452 224" style="stroke:var(--batt)"/>
-      <!-- zon -->
-      <g id="sun-ico" transform="translate(70 92)">
-        <circle r="20" style="fill:var(--sun)"/>
-        <g style="stroke:var(--sun)" stroke-width="3" stroke-linecap="round">
-          <path d="M0 -30v-7M0 30v7M-30 0h-7M30 0h7M-21 -21l-5 -5M21 21l5 5M-21 21l-5 5M21 -21l5 -5"/>
-        </g>
-      </g>
-      <text class="lbl num" x="70" y="160" text-anchor="middle" id="t-sun">–</text>
-      <text class="sub" x="70" y="176" text-anchor="middle">ZONNEPANELEN</text>
-      <!-- huis -->
-      <line class="ground" x1="20" y1="270" x2="540" y2="270"/>
-      <polygon class="roof" points="186,138 280,62 374,138"/>
-      <g id="panels">
-        <polygon class="panel" points="236,108 258,90 278,90 256,108"/>
-        <polygon class="panel" points="262,108 284,90 304,90 282,108"/>
-        <polygon class="panel" points="222,124 244,106 264,106 242,124"/>
-        <polygon class="panel" points="248,124 270,106 290,106 268,124"/>
-      </g>
-      <rect class="wall" x="202" y="136" width="156" height="134"/>
-      <rect class="win" x="222" y="156" width="34" height="30" rx="3"/>
-      <rect class="win" x="304" y="156" width="34" height="30" rx="3"/>
-      <rect class="wall" x="264" y="214" width="32" height="56" rx="3"/>
-      <text class="lbl num" x="280" y="206" text-anchor="middle" id="t-home">–</text>
-      <text class="sub" x="280" y="150" text-anchor="middle" dy="-0">&nbsp;</text>
-      <!-- net -->
-      <g transform="translate(60 224)" style="stroke:var(--grid)" fill="none" stroke-width="3" stroke-linejoin="round">
-        <path d="M-14 46 L0 -30 L14 46 M-9 18h18 M-6 2h12 M-20 -18h40 M-16 -6h32"/>
-      </g>
-      <text class="lbl num" x="60" y="148" text-anchor="middle" id="t-grid" dy="0" style="display:none">–</text>
-      <!-- accu -->
-      <g transform="translate(470 186)">
-        <rect x="0" y="0" width="56" height="84" rx="9" style="fill:var(--surface-2);stroke:var(--batt)" stroke-width="3"/>
-        <rect x="18" y="-8" width="20" height="8" rx="2" style="fill:var(--batt)"/>
-        <rect id="batt-fill" x="6" y="6" width="44" height="72" rx="5" style="fill:var(--batt);opacity:.85"/>
-      </g>
-      <text class="lbl num" x="498" y="150" text-anchor="middle" id="t-batt">–</text>
-      <text class="sub num" x="498" y="168" text-anchor="middle" id="t-batt-sub">THUISACCU</text>
-      <text class="lbl num" x="150" y="210" text-anchor="middle" id="t-grid2">–</text>
-      <text class="sub" x="150" y="248" text-anchor="middle" id="t-grid-sub">NET</text>
-      <text class="sub" x="280" y="236" text-anchor="middle" style="opacity:0">.</text>
-    </svg>
-    <div class="stats" id="stats"></div>
-    <svg class="curve" id="curve" viewBox="0 0 600 84" preserveAspectRatio="none" aria-label="Zonne-opbrengst vandaag"></svg>
-    <div class="soon">
-      <div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.6 10.8c.6.5 1 1.2 1 2V16h5.2v-.2c0-.8.4-1.5 1-2A6 6 0 0 0 12 3z"/></svg>Verlichting · binnenkort</div>
-      <div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><rect x="3" y="7" width="13" height="10" rx="2"/><path d="M16 10l5-3v10l-5-3z"/></svg>Camera's · binnenkort</div>
+  <section class="p energy" aria-label="Energie">
+    <h2>Energie <span class="st" id="e-state"></span></h2>
+    <div class="ro" id="e-ro"></div>
+    <svg class="sankey" id="e-flow" viewBox="0 0 640 190" role="img" aria-label="Stroomverdeling"></svg>
+    <div class="chartbox">
+      <h2>Vandaag <span class="st dim mono" style="letter-spacing:.06em">06–24</span></h2>
+      <svg id="e-chart" viewBox="0 0 640 240" role="img" aria-label="Zon, verbruik en accu vandaag"></svg>
+      <div class="legend"><span style="color:var(--amber)">■ ZON KW</span><span style="color:var(--text)">— VERBRUIK KW</span><span style="color:var(--green)">- - ACCU %</span></div>
     </div>
   </section>
 
-  <section class="card climate" aria-label="Kachel">
-    <h2><span class="dot" style="color:var(--heat)"></span>Kachel<span class="src" id="src-climate"></span></h2>
-    <div class="body">
-      <div class="dial">
-        <svg viewBox="0 0 200 200" id="dial"></svg>
-        <div class="center">
-          <div class="act" id="c-act">&nbsp;</div>
-          <div class="set num" id="c-set">–</div>
-          <div class="now num" id="c-now">&nbsp;</div>
-        </div>
-      </div>
-      <div class="ctrls">
-        <button class="btn up" id="c-up" aria-label="Warmer">+</button>
-        <button class="btn down" id="c-down" aria-label="Kouder">−</button>
+  <section class="p climate" aria-label="Kachel">
+    <h2>Kachel <span id="c-name" class="dim"></span><span class="st" id="c-state"></span></h2>
+    <div class="cbody">
+      <div class="gauge"><svg id="c-gauge" viewBox="0 0 200 200"></svg></div>
+      <div class="ctrl">
+        <button class="key" id="c-up" aria-label="Warmer">+</button>
+        <button class="key" id="c-down" aria-label="Kouder">−</button>
+        <div class="tbl" id="c-tbl" style="grid-template-columns:auto auto;margin-top:6px"></div>
       </div>
     </div>
-    <div class="chips" id="c-modes"></div>
+    <div class="presets" id="c-modes"></div>
   </section>
 
-  <section class="card printer" aria-label="3D-printer">
-    <h2><span class="dot" style="color:var(--print)"></span>3D-printer<span class="src" id="src-printer"></span></h2>
-    <div class="body">
-      <div class="ring">
-        <svg viewBox="0 0 120 120"><circle cx="60" cy="60" r="50" fill="none" style="stroke:var(--surface-2)" stroke-width="10"/>
-          <circle id="p-ring" cx="60" cy="60" r="50" fill="none" style="stroke:var(--print)" stroke-width="10" stroke-linecap="round" stroke-dasharray="0 400"/></svg>
-        <div class="center num" id="p-pct">–</div>
-      </div>
-      <div class="pinfo">
-        <div><span class="state" id="p-state">–</span></div>
-        <div class="file" id="p-file">&nbsp;</div>
-        <div class="kv num" id="p-kv"></div>
-      </div>
-    </div>
+  <section class="p weather wx" aria-label="Weer">
+    <h2>Weer <span id="w-place"></span><span class="st dim" id="w-toggle" style="display:flex;gap:6px;letter-spacing:0"></span></h2>
+    <div class="wxnow"><b class="num" id="w-t">–</b><span id="w-desc"></span></div>
+    <svg id="w-chart" viewBox="0 0 300 190" role="img" aria-label="Temperatuur en regenkans komende 12 uur"></svg>
+    <div class="wxline" id="w-line"></div>
   </section>
 
-  <section class="card weather" aria-label="Weer">
-    <h2><span class="dot" style="color:var(--cool)"></span>Weer<span class="src" id="src-weather"></span></h2>
-    <div class="chips" id="w-places"></div>
-    <div class="wnow">
-      <div class="ico" id="w-ico"></div>
-      <div class="t num" id="w-t">–</div>
-      <div class="d"><b id="w-desc">&nbsp;</b><span id="w-extra">&nbsp;</span></div>
-    </div>
-    <div class="hours num" id="w-hours"></div>
-    <div class="days num" id="w-days"></div>
+  <section class="p printer" aria-label="3D-printer">
+    <h2><span id="p-name">3D-printer</span><span class="st" id="p-state"></span></h2>
+    <div class="pbig"><b class="num" id="p-pct">–</b><span class="mono" style="color:var(--muted)" id="p-layer"></span></div>
+    <div class="bars" id="p-bars"></div>
+    <div class="tbl" id="p-tbl"></div>
+    <div class="file" id="p-file"></div>
   </section>
 
-  <section class="card agenda" aria-label="Agenda">
-    <h2><span class="dot" style="color:var(--grid)"></span>Agenda<span class="src" id="src-agenda"></span></h2>
-    <div class="alist" id="a-list"></div>
+  <section class="p agenda" aria-label="Agenda">
+    <h2>Agenda <span class="st dim" id="a-src">3 dagen</span></h2>
+    <div class="ag" id="a-list"></div>
   </section>
 </div>
 
 <script>
-/* =====================================================================
-   INSTELLINGEN — dit is het enige deel dat je hoeft aan te passen.
-   Laat ha.token leeg om met voorbeelddata te draaien.
-   ===================================================================== */
 const CONFIG = {
   places: [
     { name: "Thuis", town: "Melissant", lat: 51.77, lon: 4.08 },
@@ -318,6 +179,7 @@ const CONFIG = {
     batterySoc:   "sensor.battery_soc",          // %
     batteryPower: "sensor.battery_power",        // W, positief = laden, negatief = ontladen
     gridPower:    "sensor.grid_power",           // W, positief = afname van net, negatief = teruglevering
+    homePower:    "",                            // W, optioneel: verbruik huis (voor de daggrafiek)
     homeToday:    "sensor.home_energy_today",    // kWh vandaag (optioneel)
     exportToday:  "sensor.grid_export_today",    // kWh vandaag (optioneel)
     // SHPI-thermostaat via de REST-koppeling uit homeassistant/shpi.yaml
@@ -366,10 +228,7 @@ const S = { energy: null, climate: null, printer: null, weather: null, agenda: n
 function tickClock() {
   const d = new Date();
   $("clock").textContent = d.toLocaleTimeString(nl, { hour: "2-digit", minute: "2-digit" });
-  const ds = d.toLocaleDateString(nl, { weekday: "long", day: "numeric", month: "long" });
-  $("date").textContent = ds[0].toUpperCase() + ds.slice(1);
-  const h = d.getHours();
-  $("greet").textContent = h < 6 ? "Goedenacht" : h < 12 ? "Goedemorgen" : h < 18 ? "Goedemiddag" : "Goedenavond";
+  $("date").textContent = d.toLocaleDateString(nl, { weekday: "short", day: "numeric", month: "short" }).replace(/\./g, "");
 }
 
 /* ---------- iconen ---------- */
@@ -409,23 +268,28 @@ function solarAt(t) { // kW, novemberdag ~7:55–16:50 met wat wolken
   return Math.max(0, 2.6 * Math.pow(Math.sin(Math.PI * x), 1.6) * clouds);
 }
 function demoEnergy() {
-  const now = new Date(), curve = [];
+  const now = new Date(), curve = [], useCurve = [], socCurve = [];
   const start = new Date(now); start.setHours(6, 0, 0, 0);
-  let kwh = 0;
-  for (let t = new Date(start); t <= now && t.getHours() < 21; t = new Date(t.getTime() + 15 * 60000)) {
-    const v = solarAt(t); curve.push([t.getTime(), v]); kwh += v / 4;
+  let kwh = 0, soc = 52;
+  for (let t = new Date(start); t <= now; t = new Date(t.getTime() + 15 * 60000)) {
+    const h = t.getHours() + t.getMinutes() / 60, v = solarAt(t);
+    const use = .35 + .22 * Math.sin(h * 1.7) + (h > 17 && h < 22 ? .5 : 0) + (h > 7 && h < 8.3 ? .9 : 0);
+    curve.push([t.getTime(), v]); useCurve.push([t.getTime(), use]); kwh += v / 4;
+    soc = h < 9 ? 52 - (h - 6) * 2 : h < 15 ? 46 + (h - 9) * 8.3 : h < 17 ? 96 : 96 - (h - 17) * 4.2; socCurve.push([t.getTime(), soc]);
   }
   const solar = solarAt(now) * 1000;
   const home = 420 + 160 * Math.sin(now.getMinutes() / 9) + (now.getHours() >= 17 && now.getHours() < 22 ? 380 : 0);
-  let soc = 78, batt = 0, grid = 0;
+  let batt = 0, grid = 0;
   const surplus = solar - home;
-  if (surplus > 0) { batt = Math.min(surplus, 2400); grid = -(surplus - batt); soc = 64; }
-  else { batt = -Math.min(-surplus, 2200); grid = 0; soc = now.getHours() >= 17 ? 71 : 52; }
-  return { solar, home, soc, batt, grid, solarToday: kwh, homeToday: 9.4, exportToday: Math.max(0, kwh - 7.1), curve };
+  if (surplus > 0) { batt = Math.min(surplus, 2400); grid = -(surplus - batt); }
+  else { batt = -Math.min(-surplus, 2200); grid = 0; }
+  soc = Math.round(socCurve.length ? socCurve[socCurve.length - 1][1] : 60);
+  return { solar, home, soc, batt, grid, solarToday: kwh, homeToday: 9.4, exportToday: Math.max(0, kwh - 7.1), curve, useCurve, socCurve };
 }
 function demoWeather() {
   const now = new Date(), hours = [], days = [];
-  for (let i = 1; i <= 6; i++) { const t = new Date(now.getTime() + i * 3600e3); hours.push({ t, temp: 8 - i * .3, code: i > 3 ? 61 : 3, rain: i > 3 ? 40 + i * 6 : 10, day: t.getHours() > 7 && t.getHours() < 17 }); }
+  const tt = [8.3, 8, 7.6, 7.4, 7.1, 6.9, 6.8, 6.6, 6.5, 6.6, 7, 7.8], rr = [5, 10, 15, 64, 70, 76, 60, 40, 20, 10, 5, 5];
+  for (let i = 0; i < 12; i++) { const t = new Date(now.getTime() + (i + 1) * 3600e3); t.setMinutes(0, 0, 0); hours.push({ t, temp: tt[i], code: rr[i] > 50 ? 61 : 3, rain: rr[i], day: t.getHours() > 7 && t.getHours() < 17 }); }
   const dd = [[61, 10, 6, 70], [3, 9, 5, 20], [2, 11, 4, 10]];
   dd.forEach((d, i) => { const t = new Date(now); t.setDate(t.getDate() + i); days.push({ t, code: d[0], max: d[1], min: d[2], rain: d[3] }); });
   return { temp: 8.3, feels: 5.6, code: 3, wind: 22, dir: 225, hum: 86, isDay: now.getHours() > 7 && now.getHours() < 17, hours, days };
@@ -449,7 +313,7 @@ function demoPrinter() {
   return { name: CONFIG.entities.printer.name, state: "printen", progress: p, file: "kabelhouder_bureau_v3.gcode", left: (total - el) / 1000,
     nozzle: 219 + Math.random() * 2, nozzleT: 220, bed: 60, bedT: 60, layer: Math.round(220 * p / 100), layers: 220 };
 }
-const demoClimate = { current: 19.6, target: 20.5, action: "heating", preset: "comfort", presets: CONFIG.climatePresets, min: 7, max: 30 };
+const demoClimate = { current: 19.6, target: 20.5, action: "heating", preset: null, presets: [], min: 7, max: 30, step: .5 };
 
 /* ---------- Home Assistant ---------- */
 async function ha(path, opts = {}) {
@@ -497,12 +361,19 @@ async function pollHA() {
   render();
 }
 async function loadSolarHistory() {
-  if (!LIVE || !st(CONFIG.entities.solarPower)) return;
+  const E = CONFIG.entities;
+  if (!LIVE || !st(E.solarPower)) return;
   const s = new Date(); s.setHours(6, 0, 0, 0);
+  const ids = [E.solarPower, E.batterySoc, E.homePower].filter(id => id && st(id));
   try {
-    const h = await ha(`/api/history/period/${s.toISOString()}?filter_entity_id=${CONFIG.entities.solarPower}&minimal_response&no_attributes`);
-    const pts = (h[0] || []).map(p => [new Date(p.last_changed || p.lu * 1000).getTime(), parseFloat(p.state ?? p.s) / 1000]).filter(p => !isNaN(p[1]));
-    if (S.energy) S.energy.curve = pts;
+    const h = await ha(`/api/history/period/${s.toISOString()}?filter_entity_id=${ids.join(",")}&minimal_response&no_attributes`);
+    const series = {};
+    (h || []).forEach(arr => { if (!arr.length) return; const id = arr[0].entity_id; series[id] = arr.map(p => [new Date(p.last_changed || p.lu * 1000).getTime(), parseFloat(p.state ?? p.s)]).filter(p => !isNaN(p[1])); });
+    if (S.energy) {
+      S.energy.curve = (series[E.solarPower] || []).map(([t, v]) => [t, v / 1000]);
+      S.energy.socCurve = series[E.batterySoc] || [];
+      S.energy.useCurve = (series[E.homePower] || []).map(([t, v]) => [t, v / 1000]);
+    }
     render();
   } catch (e) { console.warn(e); }
 }
@@ -557,7 +428,7 @@ async function loadWeatherFor(i) {
     const r = await fetch(u); if (!r.ok) throw 0; const j = await r.json();
     const nowH = new Date(); nowH.setMinutes(0, 0, 0);
     const idx = j.hourly.time.findIndex(t => new Date(t) > nowH);
-    const hours = j.hourly.time.slice(idx, idx + 6).map((t, k) => ({ t: new Date(t), temp: j.hourly.temperature_2m[idx + k], code: j.hourly.weather_code[idx + k], rain: j.hourly.precipitation_probability[idx + k], day: !!j.hourly.is_day[idx + k] }));
+    const hours = j.hourly.time.slice(idx, idx + 12).map((t, k) => ({ t: new Date(t), temp: j.hourly.temperature_2m[idx + k], code: j.hourly.weather_code[idx + k], rain: j.hourly.precipitation_probability[idx + k], day: !!j.hourly.is_day[idx + k] }));
     const days = j.daily.time.map((t, k) => ({ t: new Date(t + "T12:00"), code: j.daily.weather_code[k], max: j.daily.temperature_2m_max[k], min: j.daily.temperature_2m_min[k], rain: j.daily.precipitation_probability_max[k] }));
     const c = j.current;
     WX[i] = { live: true, temp: c.temperature_2m, feels: c.apparent_temperature, code: c.weather_code, wind: c.wind_speed_10m, dir: c.wind_direction_10m, hum: c.relative_humidity_2m, isDay: !!c.is_day, hours, days };
@@ -580,134 +451,180 @@ function polar(cx, cy, r, a) { const rad = (a - 90) * Math.PI / 180; return [cx 
 function arc(cx, cy, r, a0, a1) { const [x0, y0] = polar(cx, cy, r, a0), [x1, y1] = polar(cx, cy, r, a1); return `M${x0} ${y0} A${r} ${r} 0 ${a1 - a0 > 180 ? 1 : 0} 1 ${x1} ${y1}`; }
 const srcLabel = k => S.src[k] === "live" ? "live" : "voorbeeld";
 
+const C = { amber: "#ffb000", green: "#43d17a", blue: "#4a8df0", fg: "#f2f3f4", text: "#d6d9dd", muted: "#7b828b", faint: "#4f555c", line: "#1f2226", grey: "#3a3e44" };
+const kw = w => Math.abs(w) >= 1000 ? [fmt(Math.abs(w) / 1000, 2), "kW"] : [fmt(Math.abs(w)), "W"];
+const isLive = k => S.src[k] === "live";
+
+/* ---------- energie ---------- */
+function flows(e) {
+  const solar = Math.max(0, e.solar || 0), home = Math.max(0, e.home || 0);
+  const dis = Math.max(0, -(e.batt || 0)), chg = Math.max(0, e.batt || 0), imp = Math.max(0, e.grid || 0);
+  let rest = home;
+  const s2h = Math.min(solar, rest); rest -= s2h;
+  const b2h = Math.min(dis, rest); rest -= b2h;
+  const g2h = Math.min(imp, rest);
+  const s2b = Math.min(solar - s2h, chg);
+  const g2b = Math.max(0, Math.min(imp - g2h, chg - s2b));
+  const s2g = Math.max(0, solar - s2h - s2b);
+  return {
+    src: [["ZON", solar, C.amber], ["ACCU", dis, C.green], ["NET", imp, C.blue]],
+    dst: [["HUIS", home, C.text], ["ACCU", chg, C.green], ["NET", s2g, C.blue]],
+    f: [[0, 0, s2h], [1, 0, b2h], [2, 0, g2h], [0, 1, s2b], [2, 1, g2b], [0, 2, s2g]],
+  };
+}
+function stack(items, H, top, gap) {
+  const tot = items.reduce((a, it) => a + it[1], 0) || 1, avail = H - gap * (items.length - 1) - items.length * 4;
+  let y = top;
+  return items.map(it => { const h = 4 + Math.max(0, it[1]) / tot * avail; const r = { y, h, used: 0 }; y += h + gap; return r; });
+}
 function renderEnergy() {
   const e = S.energy; if (!e) return;
-  $("src-energy").textContent = srcLabel("energy");
-  $("t-sun").textContent = watt(e.solar);
-  $("t-home").textContent = watt(e.home);
-  $("t-batt").textContent = fmt(e.soc) + "%";
-  $("t-batt-sub").textContent = Math.abs(e.batt) < 20 ? "ACCU · RUST" : (e.batt > 0 ? "LADEN " : "ONTLADEN ") + watt(e.batt);
-  $("t-grid2").textContent = Math.abs(e.grid) < 20 ? "0 W" : watt(e.grid);
-  $("t-grid-sub").textContent = Math.abs(e.grid) < 20 ? "NET · IN BALANS" : e.grid > 0 ? "VAN HET NET" : "TERUGLEVERING";
-  const lvl = Math.max(0, Math.min(100, e.soc ?? 0)) / 100, f = $("batt-fill");
-  f.setAttribute("height", 72 * lvl); f.setAttribute("y", 6 + 72 * (1 - lvl));
-  const w = v => Math.max(3, Math.min(9, 3 + Math.abs(v) / 400));
-  const sSun = $("s-sun"); sSun.classList.toggle("off", e.solar < 20); sSun.style.strokeWidth = w(e.solar);
-  const sG = $("s-grid"); sG.classList.toggle("off", Math.abs(e.grid) < 20); sG.classList.toggle("rev", e.grid < 0); sG.style.strokeWidth = w(e.grid);
-  const sB = $("s-batt"); sB.classList.toggle("off", Math.abs(e.batt) < 20); sB.classList.toggle("rev", e.batt < 0); sB.style.strokeWidth = w(e.batt);
-  $("sun-ico").style.opacity = e.solar < 20 ? .35 : 1;
+  const state = e.grid < -20 ? ["Teruglevering", "ok"] : e.batt > 20 ? ["Accu laadt", "ok"] : e.batt < -20 ? ["Accu levert", ""] : e.grid > 20 ? ["Van het net", ""] : e.solar > 20 ? ["Zon levert", "ok"] : ["In rust", "dim"];
+  const st = $("e-state"); st.textContent = state[0]; st.className = "st " + state[1];
+  const [sv, su] = kw(e.solar), [gv, gu] = kw(e.grid), [hv, hu] = kw(e.home), [bv, bu] = kw(e.batt);
+  $("e-ro").innerHTML =
+    `<div><small>ZON</small><b>${sv}<u>${su}</u></b><em>vandaag ${fmt(e.solarToday, 1)} kWh</em></div>` +
+    `<div><small>ACCU</small><b style="color:var(--green)">${fmt(e.soc)}<u>%</u></b><em>${Math.abs(e.batt) < 20 ? "rust" : (e.batt > 0 ? "laden " : "levert ") + bv + " " + bu}</em></div>` +
+    `<div><small>NET</small><b>${Math.abs(e.grid) < 20 ? "0" : gv}<u>${gu}</u></b><em>${e.grid > 20 ? "afname" : "terug " + fmt(e.exportToday, 1) + " kWh"}</em></div>` +
+    `<div><small>HUIS</small><b>${hv}<u>${hu}</u></b><em>${e.homeToday != null ? "vandaag " + fmt(e.homeToday, 1) + " kWh" : "verbruik nu"}</em></div>`;
 
-  const tiles = [["Opgewekt vandaag", fmt(e.solarToday, 1), "kWh"], ["Verbruik vandaag", fmt(e.homeToday, 1), "kWh"],
-    ["Teruggeleverd", fmt(e.exportToday, 1), "kWh"], ["Accu", fmt(e.soc), "%"]];
-  $("stats").innerHTML = tiles.map(([l, v, u]) => `<div class="stat"><span>${l}</span><b class="num">${v}<small>${u}</small></b></div>`).join("");
-
-  // opbrengstcurve 06:00–20:00
-  const c = e.curve || [], svg = $("curve"), W = 600, H = 84, top = 6, bot = 66;
-  const d0 = new Date(); d0.setHours(6, 0, 0, 0); const t0 = d0.getTime(), t1 = t0 + 14 * 3600e3;
-  const ymax = Math.max(1, Math.ceil(Math.max(0, ...c.map(p => p[1]))));
-  const X = t => (t - t0) / (t1 - t0) * W, Y = v => bot - v / ymax * (bot - top);
+  // stroomverdeling
+  const F = flows(e), W = 640, H = 190, L = 12, R = W - 12, top = 18, gap = 16;
+  const a = stack(F.src, H - top - 6, top, gap), b = stack(F.dst, H - top - 6, top, gap);
+  const tot = Math.max(1, F.src.reduce((s, x) => s + x[1], 0)), unit = i => (a[i].h - 4) / Math.max(F.src[i][1], 1e-9);
   let g = "";
-  for (let k = 0; k <= ymax; k++) g += `<line x1="0" x2="${W}" y1="${Y(k)}" y2="${Y(k)}" style="stroke:var(--line)" stroke-width="1" vector-effect="non-scaling-stroke"/>`;
-  [6, 9, 12, 15, 18].forEach(hh => { const x = X(t0 + (hh - 6) * 3600e3); g += `<text x="${x + 2}" y="${H - 4}">${hh}:00</text>`; });
-  g += `<text x="${W - 2}" y="${Y(ymax) + 11}" text-anchor="end">${ymax} kW</text>`;
-  if (c.length > 1) {
-    const pts = c.filter(p => p[0] >= t0 && p[0] <= t1).map(p => `${X(p[0]).toFixed(1)},${Y(p[1]).toFixed(1)}`);
-    if (pts.length > 1) {
-      const lastX = pts[pts.length - 1].split(",")[0], firstX = pts[0].split(",")[0];
-      g += `<polygon points="${firstX},${bot} ${pts.join(" ")} ${lastX},${bot}" style="fill:var(--sun);opacity:.18"/>`;
-      g += `<polyline points="${pts.join(" ")}" fill="none" style="stroke:var(--sun)" stroke-width="2" vector-effect="non-scaling-stroke" stroke-linejoin="round"/>`;
-    }
-  }
-  const nx = X(Date.now());
-  if (nx > 0 && nx < W) g += `<line x1="${nx}" x2="${nx}" y1="${top}" y2="${bot}" style="stroke:var(--muted)" stroke-dasharray="3 3" stroke-width="1" vector-effect="non-scaling-stroke"/>`;
-  svg.innerHTML = g;
+  F.f.forEach(([si, di, v]) => {
+    if (v < 1) return;
+    const hs = v / Math.max(F.src[si][1], 1e-9) * (a[si].h), hd = v / Math.max(F.dst[di][1], 1e-9) * (b[di].h);
+    const y0 = a[si].y + a[si].used, y1 = b[di].y + b[di].used; a[si].used += hs; b[di].used += hd;
+    const mx = (L + R) / 2;
+    g += `<path d="M${L} ${y0} C${mx} ${y0} ${mx} ${y1} ${R} ${y1} L${R} ${y1 + hd} C${mx} ${y1 + hd} ${mx} ${y0 + hs} ${L} ${y0 + hs}Z" fill="${F.src[si][2]}" opacity=".22"/>`;
+  });
+  F.src.forEach(([n, v, c], i) => { const on = v >= 1; g += `<rect x="0" y="${a[i].y}" width="${L}" height="${a[i].h}" fill="${on ? c : C.grey}"/><text x="${L + 8}" y="${a[i].y + Math.min(a[i].h / 2 + 4, a[i].h + 12)}" font-size="11" letter-spacing="1" fill="${on ? C.text : C.muted}">${n}  ${kw(v).join(" ")}</text>`; });
+  F.dst.forEach(([n, v, c], i) => { const on = v >= 1; g += `<rect x="${R}" y="${b[i].y}" width="${L}" height="${b[i].h}" fill="${on ? c : C.grey}"/><text x="${R - 8}" y="${b[i].y + Math.min(b[i].h / 2 + 4, b[i].h + 12)}" text-anchor="end" font-size="11" letter-spacing="1" fill="${on ? C.text : C.muted}">${n}  ${kw(v).join(" ")}</text>`; });
+  g += `<text x="0" y="10" font-size="9.5" letter-spacing="1.5" fill="${C.faint}">BRON</text><text x="${W}" y="10" text-anchor="end" font-size="9.5" letter-spacing="1.5" fill="${C.faint}">NAAR</text>`;
+  $("e-flow").innerHTML = g;
+
+  // daggrafiek 06–24
+  const el = $("e-chart"), cw = Math.max(200, el.clientWidth || 640), ch = Math.max(80, el.clientHeight || 240), pl = 26, pr = 34, pt = 8, pb = 20;
+  el.setAttribute("viewBox", `0 0 ${cw} ${ch}`);
+  const d0 = new Date(); d0.setHours(6, 0, 0, 0); const t0 = d0.getTime(), t1 = t0 + 18 * 3600e3;
+  const sol = (e.curve || []).filter(p => p[0] >= t0), use = (e.useCurve || []).filter(p => p[0] >= t0), soc = (e.socCurve || []).filter(p => p[0] >= t0);
+  const ymax = Math.max(1, Math.ceil(Math.max(0, ...sol.map(p => p[1]), ...use.map(p => p[1]))));
+  const X = t => pl + (t - t0) / (t1 - t0) * (cw - pl - pr), Y = v => ch - pb - v / ymax * (ch - pb - pt), Ys = v => ch - pb - v / 100 * (ch - pb - pt);
+  let c = "";
+  for (let k = 0; k <= ymax; k++) c += `<line x1="${pl}" x2="${cw - pr}" y1="${Y(k)}" y2="${Y(k)}" stroke="${C.line}"/><text x="${pl - 6}" y="${Y(k) + 3.5}" text-anchor="end" font-size="10" fill="${C.faint}">${k}</text>`;
+  [0, 50, 100].forEach(v => c += `<text x="${cw - pr + 6}" y="${Ys(v) + 3.5}" font-size="10" fill="${C.faint}">${v}%</text>`);
+  for (let h = 6; h <= 24; h += 3) c += `<text x="${X(t0 + (h - 6) * 3600e3)}" y="${ch - 5}" text-anchor="middle" font-size="10" fill="${C.faint}">${String(h % 24).padStart(2, "0")}</text>`;
+  const pts = arr => arr.map(p => `${X(p[0]).toFixed(1)},${p.y.toFixed(1)}`).join(" ");
+  if (sol.length > 1) { const s = sol.map(p => Object.assign([...p], { y: Y(p[1]) })); c += `<polygon points="${X(s[0][0])},${Y(0)} ${pts(s)} ${X(s[s.length - 1][0])},${Y(0)}" fill="${C.amber}" opacity=".2"/><polyline points="${pts(s)}" fill="none" stroke="${C.amber}" stroke-width="1.5" vector-effect="non-scaling-stroke"/>`; }
+  if (use.length > 1) c += `<polyline points="${pts(use.map(p => Object.assign([...p], { y: Y(p[1]) })))}" fill="none" stroke="${C.text}" stroke-width="1.2" vector-effect="non-scaling-stroke"/>`;
+  if (soc.length > 1) c += `<polyline points="${pts(soc.map(p => Object.assign([...p], { y: Ys(p[1]) })))}" fill="none" stroke="${C.green}" stroke-width="1.2" stroke-dasharray="4 4" vector-effect="non-scaling-stroke"/>`;
+  const nx = X(Date.now()); if (nx > pl && nx < cw - pr) c += `<line x1="${nx}" x2="${nx}" y1="${pt}" y2="${Y(0)}" stroke="${C.amber}" stroke-dasharray="2 3" vector-effect="non-scaling-stroke"/>`;
+  $("e-chart").innerHTML = c;
 }
 
+/* ---------- kachel ---------- */
 function renderClimate() {
   const c = S.climate; if (!c) return;
-  $("src-climate").textContent = srcLabel("climate");
-  const [lo, hi] = CONFIG.climateRange, A0 = -130, A1 = 130;
-  const ang = v => A0 + (Math.min(hi, Math.max(lo, v)) - lo) / (hi - lo) * (A1 - A0);
   const heating = /heat/.test(c.action || "");
-  let g = `<path d="${arc(100, 100, 84, A0, A1)}" fill="none" style="stroke:var(--surface-2)" stroke-width="14" stroke-linecap="round"/>`;
-  if (c.target != null) g += `<path d="${arc(100, 100, 84, A0, ang(c.target))}" fill="none" style="stroke:${heating ? "var(--heat)" : "var(--muted)"}" stroke-width="14" stroke-linecap="round"/>`;
-  if (c.current != null) { const [x, y] = polar(100, 100, 84, ang(c.current)); g += `<circle cx="${x}" cy="${y}" r="5" style="fill:var(--fg);stroke:var(--surface)" stroke-width="3"/>`; }
-  for (let v = lo; v <= hi; v += 2) { const [x1, y1] = polar(100, 100, 70, ang(v)), [x2, y2] = polar(100, 100, 66, ang(v)); g += `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" style="stroke:var(--faint)" stroke-width="1.5"/>`; }
-  $("dial").innerHTML = g;
-  $("c-set").innerHTML = c.target == null ? "–" : `${fmt(c.target, 1)}<sup>°C</sup>`;
-  $("c-now").textContent = c.current == null ? "" : `Nu ${fmt(c.current, 1)} °C`;
-  const act = $("c-act"); act.textContent = heating ? "Verwarmt" : (c.action === "off" ? "Uit" : "Op temperatuur");
-  act.style.color = heating ? "var(--heat)" : "var(--muted)";
+  const s = $("c-state"); s.textContent = heating ? "Stookt" : c.action === "off" ? "Uit" : "Stand-by"; s.className = "st " + (heating ? "" : "dim");
+  $("c-name").textContent = "· SHPI";
+  const [lo, hi] = CONFIG.climateRange, a = v => -135 + (Math.min(hi, Math.max(lo, v)) - lo) / (hi - lo) * 270;
+  let m = "";
+  for (let v = lo; v <= hi + .001; v += .5) {
+    const major = Math.abs(v % 2) < .01, on = c.target != null && v <= c.target + .001;
+    const [x1, y1] = polar(100, 100, 88, a(v)), [x2, y2] = polar(100, 100, major ? 74 : 80, a(v));
+    m += `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${on ? C.amber : C.grey}" stroke-width="${major ? 2 : 1.2}"/>`;
+    if (major) { const [tx, ty] = polar(100, 100, 62, a(v)); m += `<text x="${tx}" y="${ty + 3.5}" text-anchor="middle" font-size="9" fill="${C.faint}">${v}</text>`; }
+  }
+  if (c.current != null) { const [nx, ny] = polar(100, 100, 82, a(c.current)); m += `<line x1="100" y1="100" x2="${nx}" y2="${ny}" stroke="${C.fg}" stroke-width="1.5"/>`; }
+  m += `<circle cx="100" cy="100" r="5" fill="${C.fg}"/>`;
+  m += `<text x="100" y="144" text-anchor="middle" font-weight="300" font-size="26" fill="${C.fg}">${c.target == null ? "–" : fmt(c.target, 1)}</text><text x="100" y="160" text-anchor="middle" font-size="8.5" letter-spacing="2" fill="${C.muted}" font-family="Inter Tight">DOEL °C</text>`;
+  $("c-gauge").innerHTML = m;
+  $("c-tbl").innerHTML = `<span>Nu</span><b>${fmt(c.current, 1)}°</b><span>Doel</span><b class="a">${fmt(c.target, 1)}°</b>`;
   const names = { comfort: "Comfort", eco: "Eco", away: "Afwezig", home: "Thuis", sleep: "Slapen", boost: "Boost", none: "Handmatig" };
-  const presets = (c.presets && c.presets.length ? c.presets : []).slice(0, 4);
-  $("c-modes").innerHTML = presets.map(p => `<button class="chip" id="preset-${p}" aria-pressed="${p === c.preset}" data-p="${p}">${names[p] || p}</button>`).join("");
+  $("c-modes").innerHTML = (c.presets || []).slice(0, 4).map(p => `<button class="seg-btn" id="preset-${p}" data-p="${p}" aria-pressed="${p === c.preset}">${names[p] || p}</button>`).join("");
 }
 
-function renderPrinter() {
-  const p = S.printer; if (!p) return;
-  $("src-printer").textContent = (p.name ? p.name + " · " : "") + srcLabel("printer");
-  const map = { printen: ["Printen", "var(--print)"], printing: ["Printen", "var(--print)"], klaar: ["Klaar", "var(--ok)"], complete: ["Klaar", "var(--ok)"], completed: ["Klaar", "var(--ok)"],
-    paused: ["Gepauzeerd", "var(--warn)"], pause: ["Gepauzeerd", "var(--warn)"], error: ["Fout", "var(--bad)"], idle: ["Stand-by", "var(--muted)"], standby: ["Stand-by", "var(--muted)"], unavailable: ["Offline", "var(--faint)"] };
-  const [lbl, col] = map[p.state] || [p.state || "Onbekend", "var(--muted)"];
-  const s = $("p-state"); s.textContent = lbl; s.style.color = col;
-  const pr = Math.max(0, Math.min(100, p.progress ?? 0)), C = 2 * Math.PI * 50;
-  $("p-ring").setAttribute("stroke-dasharray", `${C * pr / 100} ${C}`);
-  $("p-ring").style.stroke = col;
-  $("p-pct").innerHTML = `${fmt(pr)}<small>%</small>`;
-  $("p-file").textContent = p.file && p.file !== "unknown" ? p.file : "Geen printopdracht";
-  const left = p.left ?? 0, h = Math.floor(left / 3600), m = Math.round(left % 3600 / 60);
-  const done = new Date(Date.now() + left * 1000).toLocaleTimeString(nl, { hour: "2-digit", minute: "2-digit" });
-  const rows = [];
-  if (left > 0) rows.push(["Resterend", (h ? h + " u " : "") + m + " min"], ["Klaar om", done]);
-  rows.push(["Spuitmond", `${fmt(p.nozzle)} / ${fmt(p.nozzleT)} °C`], ["Bed", `${fmt(p.bed)} / ${fmt(p.bedT)} °C`]);
-  if (p.layers) rows.push(["Laag", `${fmt(p.layer)} / ${fmt(p.layers)}`]);
-  $("p-kv").innerHTML = rows.map(([k, v]) => `<span>${k}</span><b>${v}</b>`).join("");
-}
-
+/* ---------- weer ---------- */
 function renderWeather() {
   const w = S.weather; if (!w) return;
   const pl = CONFIG.places[placeIdx];
-  $("src-weather").textContent = pl.town + " · " + (S.src.weather === "live" ? "live" : "voorbeeld");
-  $("w-places").innerHTML = CONFIG.places.map((p, i) => `<button class="chip" id="place-${i}" data-i="${i}" aria-pressed="${i === placeIdx}">${esc(p.name)}</button>`).join("");
-  const [desc, ic] = wmo(w.code, w.isDay);
-  $("w-ico").innerHTML = svgIcon(ic);
-  $("w-t").textContent = fmt(w.temp) + "°";
-  $("w-desc").textContent = desc;
-  $("w-extra").textContent = `Voelt als ${fmt(w.feels)}° · ${windDir(w.dir)} ${bft(w.wind)} Bft · ${fmt(w.hum)}%`;
-  $("w-hours").innerHTML = w.hours.map(h => `<div>${h.t.getHours()}:00${svgIcon(wmo(h.code, h.day)[1])}<b>${fmt(h.temp)}°</b><span class="rain">${h.rain >= 20 ? h.rain + "%" : ""}</span></div>`).join("");
-  const lo = Math.min(...w.days.map(d => d.min)), hi = Math.max(...w.days.map(d => d.max)), span = Math.max(1, hi - lo);
-  $("w-days").innerHTML = w.days.map((d, i) => `<div class="day"><span class="n">${i === 0 ? "Vand." : d.t.toLocaleDateString(nl, { weekday: "short" })}</span>${svgIcon(wmo(d.code)[1])}<span class="lo">${fmt(d.min)}°</span><div class="bar"><i style="left:${(d.min - lo) / span * 100}%;right:${(hi - d.max) / span * 100}%"></i></div><span>${fmt(d.max)}°</span></div>`).join("");
+  $("w-place").textContent = "· " + pl.town;
+  $("w-toggle").innerHTML = CONFIG.places.map((p, i) => `<button class="seg-btn" id="place-${i}" data-i="${i}" aria-pressed="${i === placeIdx}">${esc(p.name)}</button>`).join("");
+  $("w-t").textContent = fmt(w.temp, 1) + "°";
+  const next = w.hours.find(h => h.rain >= 50);
+  $("w-desc").textContent = wmo(w.code, w.isDay)[0] + (next && wmo(w.code)[1] !== "rain" ? ` · regen vanaf ${String(next.t.getHours()).padStart(2, "0")}:00` : "");
+  const hs = w.hours.slice(0, 12), n = Math.max(1, hs.length - 1);
+  const tmin = Math.min(...hs.map(h => h.temp)), tmax = Math.max(...hs.map(h => h.temp)), span = Math.max(2, tmax - tmin);
+  const el = $("w-chart"), W = Math.max(160, el.clientWidth || 300), H = Math.max(100, el.clientHeight || 190);
+  el.setAttribute("viewBox", `0 0 ${W} ${H}`);
+  const base = H - 20, barMax = H * .32, bw = Math.min(14, (W - 28) / n * .55);
+  const X = i => 14 + i * ((W - 28) / n), Y = t => 22 + (tmax + span * .15 - t) / (span * 1.3) * (H * .5);
+  let g = "";
+  hs.forEach((h, i) => { const r = (h.rain || 0) / 100 * barMax; g += `<rect x="${X(i) - bw / 2}" y="${base - r}" width="${bw}" height="${r}" fill="${C.blue}" opacity=".55"/>`; });
+  g += `<polyline points="${hs.map((h, i) => X(i) + "," + Y(h.temp)).join(" ")}" fill="none" stroke="${C.fg}" stroke-width="1.5" vector-effect="non-scaling-stroke"/>`;
+  hs.forEach((h, i) => { if (i % 3 === 0) g += `<circle cx="${X(i)}" cy="${Y(h.temp)}" r="2.5" fill="${C.fg}"/><text x="${X(i)}" y="${Y(h.temp) - 8}" text-anchor="middle" font-size="10" fill="#aab0b8">${fmt(h.temp, 1)}</text><text x="${X(i)}" y="${H - 5}" text-anchor="middle" font-size="9" fill="${C.faint}">${String(h.t.getHours()).padStart(2, "0")}</text>`; });
+  $("w-chart").innerHTML = g;
+  const tm = w.days[1];
+  $("w-line").innerHTML = `<span>Wind ${windDir(w.dir)} ${bft(w.wind)}</span><span>Vocht ${fmt(w.hum)}%</span>${tm ? `<span>Morgen ${fmt(tm.min)}–${fmt(tm.max)}°</span>` : ""}`;
 }
 
+/* ---------- printer ---------- */
+function renderPrinter() {
+  const p = S.printer; if (!p) return;
+  $("p-name").textContent = p.name || "3D-printer";
+  const map = { printen: ["Printen", ""], printing: ["Printen", ""], klaar: ["Klaar", "ok"], complete: ["Klaar", "ok"], completed: ["Klaar", "ok"], paused: ["Gepauzeerd", ""], pause: ["Gepauzeerd", ""], error: ["Fout", ""], idle: ["Stand-by", "dim"], standby: ["Stand-by", "dim"], unavailable: ["Offline", "dim"] };
+  const [lbl, cls] = map[p.state] || [p.state || "Onbekend", "dim"];
+  const s = $("p-state"); s.textContent = lbl; s.className = "st " + cls; if (p.state === "error") s.style.color = "var(--red)"; else s.style.color = "";
+  const pr = Math.max(0, Math.min(100, p.progress ?? 0));
+  $("p-pct").innerHTML = `${fmt(pr, 1)}<u>%</u>`;
+  $("p-layer").textContent = p.layers ? `laag ${fmt(p.layer)}/${fmt(p.layers)}` : "";
+  $("p-bars").innerHTML = Array.from({ length: 40 }, (_, i) => `<i class="${i < Math.round(pr / 2.5) ? "on" : ""}"></i>`).join("");
+  const left = p.left ?? 0, h = Math.floor(left / 3600), m = Math.round(left % 3600 / 60);
+  const done = new Date(Date.now() + left * 1000).toLocaleTimeString(nl, { hour: "2-digit", minute: "2-digit" });
+  let rows = `<span>Spuitmond</span><b>${fmt(p.nozzle, 1)}°</b><b style="color:var(--muted)">/ ${fmt(p.nozzleT)}</b><span>Bed</span><b>${fmt(p.bed, 1)}°</b><b style="color:var(--muted)">/ ${fmt(p.bedT)}</b>`;
+  if (left > 0) rows += `<span>Klaar</span><b class="a">${done}</b><b style="color:var(--muted)">${h ? h + "u " : ""}${m}m</b>`;
+  $("p-tbl").innerHTML = rows;
+  $("p-file").textContent = p.file && p.file !== "unknown" ? p.file : "Geen printopdracht";
+}
+
+/* ---------- agenda ---------- */
 function renderAgenda() {
   const a = S.agenda; if (!a) return;
-  $("src-agenda").textContent = srcLabel("agenda");
-  const now = new Date(), key = d => d.toDateString(), groups = {};
-  a.forEach(ev => (groups[key(ev.start)] ||= []).push(ev));
-  const today = new Date(); const tom = new Date(); tom.setDate(tom.getDate() + 1);
-  const label = d => key(d) === key(today) ? "Vandaag" : key(d) === key(tom) ? "Morgen" : (x => x[0].toUpperCase() + x.slice(1))(d.toLocaleDateString(nl, { weekday: "long", day: "numeric", month: "long" }));
+  const now = new Date(), key = d => d.toDateString(), today = key(now);
+  const tom = new Date(); tom.setDate(tom.getDate() + 1);
   const t = d => d.toLocaleTimeString(nl, { hour: "2-digit", minute: "2-digit" });
-  let html = "";
-  Object.values(groups).forEach(evs => {
-    html += `<div class="aday">${label(evs[0].start)}</div>`;
-    html += evs.map(ev => `<div class="ev ${!ev.allDay && ev.end && ev.end < now ? "past" : ""}"><div class="tm num">${ev.allDay ? "Hele dag" : t(ev.start)}${!ev.allDay && ev.end ? `<small>${t(ev.end)}</small>` : ""}</div><i style="background:${ev.color}"></i><div class="tt">${esc(ev.title)}${ev.sub ? `<small>${esc(ev.sub)}</small>` : ""}</div></div>`).join("");
+  let html = "", nowDone = false, lastDay = null;
+  a.forEach(ev => {
+    const past = ev.allDay ? key(ev.start) < today && ev.start < now : (ev.end || ev.start) < now;
+    if (!nowDone && !past) { html += `<div class="now"><span>NU ${t(now)}</span></div>`; nowDone = true; }
+    const dk = key(ev.start);
+    if (dk !== lastDay && dk !== today) html += `<div class="dayh">${dk === key(tom) ? "Morgen" : ev.start.toLocaleDateString(nl, { weekday: "long", day: "numeric", month: "short" }).replace(".", "")}</div>`;
+    lastDay = dk;
+    const lab = ev.allDay ? "Dag" : t(ev.start);
+    html += `<div class="t ${past ? "past" : ""}">${lab}</div><div class="ti ${past ? "past" : ""}">${esc(ev.title)}${ev.sub ? `<small>${esc(ev.sub)}</small>` : ""}</div>`;
   });
-  $("a-list").innerHTML = html || `<div class="empty">Geen afspraken de komende dagen.</div>`;
+  if (!nowDone) html += `<div class="now"><span>NU ${t(now)}</span></div>`;
+  $("a-list").innerHTML = html || `<div class="empty" style="grid-column:1/-1">Geen afspraken de komende dagen.</div>`;
+  $("a-src").textContent = isLive("agenda") ? "3 dagen" : "voorbeeld";
 }
 const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
 
-function renderPills() {
-  const demo = Object.keys(S.src).filter(k => ["energy", "climate", "printer", "weather", "agenda"].includes(k)).some(k => S.src[k] !== "live");
-  let h = "";
-  if (S.energy && S.energy.solar > 20) h += `<span class="pill"><span class="dot" style="color:var(--sun)"></span>Zon <b class="num">${watt(S.energy.solar)}</b></span>`;
-  if (S.climate) h += `<span class="pill"><span class="dot" style="color:var(--heat)"></span>Binnen <b class="num">${fmt(S.climate.current, 1)}°</b></span>`;
-  if (WX[0]) h += `<span class="pill"><span class="dot" style="color:var(--cool)"></span>${esc(CONFIG.places[0].town)} <b class="num">${fmt(WX[0].temp)}°</b></span>`;
-  if (S.src.ha === "fout") h += `<span class="pill demo">Home Assistant niet bereikbaar</span>`;
-  else if (demo) h += `<span class="pill demo">Voorbeelddata</span>`;
-  $("pills").innerHTML = h;
+/* ---------- statuslampjes ---------- */
+function renderLeds() {
+  const P = CONFIG.entities.printer?.name || "Printer";
+  const items = [["energy", "SolarEdge"], ["climate", "SHPI"], ["printer", P.replace(/^Creality\s*/, "")], ["weather", "Weer"], ["agenda", "Agenda"]];
+  const err = S.src.ha === "fout";
+  $("leds").innerHTML = items.map(([k, n]) => {
+    const cls = isLive(k) ? "live" : (err && k !== "weather") ? "err" : "demo";
+    return `<span class="led ${cls}" title="${cls === "live" ? "live" : cls === "err" ? "niet bereikbaar" : "voorbeelddata"}"><i></i>${n}</span>`;
+  }).join("");
+  $("place").textContent = CONFIG.places[0].town;
 }
 
-function render() { renderEnergy(); renderClimate(); renderPrinter(); renderWeather(); renderAgenda(); renderPills(); }
+function render() { renderEnergy(); renderClimate(); renderWeather(); renderPrinter(); renderAgenda(); renderLeds(); }
 
 /* ---------- schermindeling ----------
    ?breedte=60          scherm gebruikt 60% van de breedte (bijv. naast je bureaubladiconen)
@@ -757,7 +674,7 @@ function applyLayout() {
   const ultra = LAYOUT.indeling === "ultra" || (LAYOUT.indeling === "auto" && r >= 2.05 && window.innerWidth * pct / 100 / z >= 1500);
   if (ultra) w.dataset.layout = "ultra"; else delete w.dataset.layout;
 }
-window.addEventListener("resize", applyLayout);
+window.addEventListener("resize", () => { applyLayout(); render(); });
 
 /* ---------- start ---------- */
 function start() {
@@ -775,15 +692,14 @@ function start() {
     setInterval(loadSolarHistory, 5 * 60e3); setInterval(loadAgenda, 10 * 60e3);
   }
   setInterval(() => {
-    if (S.src.energy !== "live") { const c = S.climate; S.energy = demoEnergy(); }
+    if (S.src.energy !== "live") S.energy = demoEnergy();
     if (S.src.printer !== "live") S.printer = demoPrinter();
     render();
   }, 5000);
   $("c-up").addEventListener("click", () => setTarget(+(S.climate?.step || .5)));
   $("c-down").addEventListener("click", () => setTarget(-(S.climate?.step || .5)));
-  $("w-places").addEventListener("click", e => { const b = e.target.closest("[data-i]"); if (b) setPlace(+b.dataset.i); });
+  $("w-toggle").addEventListener("click", e => { const b = e.target.closest("[data-i]"); if (b) setPlace(+b.dataset.i); });
   $("c-modes").addEventListener("click", e => { const b = e.target.closest("[data-p]"); if (b) setPreset(b.dataset.p); });
-  // scherm aan houden
   const wake = async () => { try { await navigator.wakeLock?.request("screen"); } catch (e) {} };
   wake(); document.addEventListener("visibilitychange", () => document.visibilityState === "visible" && wake());
 }
