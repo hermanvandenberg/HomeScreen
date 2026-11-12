@@ -12,6 +12,7 @@ Zonder Home Assistant-koppeling draait het scherm op voorbeelddata; het weer (Op
 | `?positie=rechts` | `links`, `midden` of `rechts` |
 | `?hoogte=70` | Gebruik 70% van de schermhoogte |
 | `?verticaal=boven` | `boven`, `midden` of `onder` |
+| `?vak=25,1,50,94` | Precies vak in % van het scherm: links, boven, breedte, hoogte |
 | `?schaal=75` | Tekst en onderdelen kleiner (75%) of groter (bijv. 120) |
 | `?indeling=ultra` | `auto`, `ultra` (4 kolommen) of `normaal` |
 | `?reset=1` | Alles terug naar standaard |
