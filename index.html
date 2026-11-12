@@ -163,7 +163,7 @@ body{background:var(--bg);color:var(--fg);font-family:var(--f-body);font-size:15
   grid-template-areas:"top top top top" "house climate weather agenda" "house printer weather agenda"}
 .wrap[data-layout="ultra"] .days{margin-top:16px}
 .wrap[data-layout="ultra"] .weather .hours{margin-top:8px}
-body.part{display:flex}
+body.part{display:flex;height:100%}
 body.part .wrap{flex:none}
 @media (max-width:1100px){
   .wrap{grid-template-columns:1fr 1fr;grid-template-rows:auto;height:auto;
@@ -713,26 +713,35 @@ function render() { renderEnergy(); renderClimate(); renderPrinter(); renderWeat
    ?breedte=60          scherm gebruikt 60% van de breedte (bijv. naast je bureaubladiconen)
    ?positie=rechts      links | midden | rechts
    ?indeling=ultra      auto | ultra | normaal   (auto kiest zelf op basis van de verhouding)
+   ?hoogte=70           scherm gebruikt 70% van de hoogte
+   ?verticaal=onder     boven | midden | onder
+   ?schaal=75           tekst en onderdelen kleiner (75%) of groter (bijv. 120%)
    Instellingen worden op dit apparaat onthouden; ?reset=1 zet alles terug. */
-const LAYOUT = { breedte: 100, positie: "midden", indeling: "auto" };
+const LAYOUT = { breedte: 100, hoogte: 100, positie: "midden", verticaal: "midden", indeling: "auto", schaal: 100 };
 (() => {
   try {
     const q = new URLSearchParams(location.search);
-    if (q.has("reset")) ["breedte", "positie", "indeling"].forEach(k => localStorage.removeItem("hs-" + k));
+    if (q.has("reset")) ["breedte", "hoogte", "positie", "verticaal", "indeling", "schaal"].forEach(k => localStorage.removeItem("hs-" + k));
     for (const k of Object.keys(LAYOUT)) {
       if (q.has(k)) localStorage.setItem("hs-" + k, q.get(k));
-      const v = localStorage.getItem("hs-" + k); if (v) LAYOUT[k] = k === "breedte" ? +v : v;
+      const v = localStorage.getItem("hs-" + k); if (v) LAYOUT[k] = ["breedte", "hoogte", "schaal"].includes(k) ? +v : v;
     }
   } catch (e) {}
 })();
 function applyLayout() {
   const w = $("app"), pct = Math.max(30, Math.min(100, LAYOUT.breedte || 100));
-  document.body.classList.toggle("part", pct < 100);
-  w.style.width = pct < 100 ? pct + "vw" : "";
+  const z = Math.max(40, Math.min(200, LAYOUT.schaal || 100)) / 100;
+  const hp = Math.max(30, Math.min(100, LAYOUT.hoogte || 100));
+  document.body.classList.toggle("part", pct < 100 || hp < 100);
+  document.body.style.alignItems = hp < 100 ? ({ boven: "flex-start", onder: "flex-end" }[LAYOUT.verticaal] || "center") : "";
+  w.style.zoom = z === 1 ? "" : z;
+  w.style.width = (pct < 100 || z !== 1) ? (window.innerWidth * pct / 100 / z) + "px" : "";
+  w.style.height = (z !== 1 || hp < 100) ? (window.innerHeight * hp / 100 / z) + "px" : "";
+  w.style.minHeight = (z !== 1 || hp < 100) ? "0" : "";
   w.style.marginLeft = pct < 100 && LAYOUT.positie !== "links" ? "auto" : "";
   w.style.marginRight = pct < 100 && LAYOUT.positie !== "rechts" ? "auto" : "";
-  const r = w.clientWidth / Math.max(1, window.innerHeight);
-  const ultra = LAYOUT.indeling === "ultra" || (LAYOUT.indeling === "auto" && r >= 2.05 && w.clientWidth >= 1500);
+  const r = (window.innerWidth * pct / 100) / Math.max(1, window.innerHeight * hp / 100);
+  const ultra = LAYOUT.indeling === "ultra" || (LAYOUT.indeling === "auto" && r >= 2.05 && window.innerWidth * pct / 100 / z >= 1500);
   if (ultra) w.dataset.layout = "ultra"; else delete w.dataset.layout;
 }
 window.addEventListener("resize", applyLayout);

@@ -10,6 +10,9 @@ Zonder Home Assistant-koppeling draait het scherm op voorbeelddata; het weer (Op
 | --- | --- |
 | `?breedte=55` | Gebruik 55% van de schermbreedte |
 | `?positie=rechts` | `links`, `midden` of `rechts` |
+| `?hoogte=70` | Gebruik 70% van de schermhoogte |
+| `?verticaal=boven` | `boven`, `midden` of `onder` |
+| `?schaal=75` | Tekst en onderdelen kleiner (75%) of groter (bijv. 120) |
 | `?indeling=ultra` | `auto`, `ultra` (4 kolommen) of `normaal` |
 | `?reset=1` | Alles terug naar standaard |
 | `?token=...` | Home Assistant-token, wordt alleen op dit apparaat bewaard |
