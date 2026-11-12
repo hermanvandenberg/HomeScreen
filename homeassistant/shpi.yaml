@@ -1,0 +1,36 @@
+# SHPI.one thermostaat (192.168.1.11) koppelen aan Home Assistant via de ingebouwde webinterface op poort 9000.
+# Plak dit onderaan /config/configuration.yaml (via de File editor) en herstart Home Assistant.
+# Geef de thermostaat in je router een vast IP-adres, anders werkt dit na een herstart van de router misschien niet meer.
+
+rest:
+  - resource: http://192.168.1.11:9000/?act_temp
+    scan_interval: 30
+    sensor:
+      - name: SHPI temperatuur
+        unique_id: shpi_temperatuur
+        unit_of_measurement: "°C"
+        device_class: temperature
+        state_class: measurement
+        value_template: "{{ value.split(':')[1].split(';')[0] | float(0) | round(1) }}"
+
+  - resource: http://192.168.1.11:9000/?set_temp
+    scan_interval: 30
+    sensor:
+      - name: SHPI ingestelde temperatuur
+        unique_id: shpi_ingestelde_temperatuur
+        unit_of_measurement: "°C"
+        device_class: temperature
+        value_template: "{{ value.split(':')[1].split(';')[0] | float(0) | round(1) }}"
+
+  - resource: http://192.168.1.11:9000/?relay1   # 1 = kachel stookt, 0 = uit (getest 12-11)
+    scan_interval: 15
+    binary_sensor:
+      - name: SHPI verwarming
+        unique_id: shpi_verwarming
+        device_class: heat
+        value_template: "{{ value.split(':')[1].split(';')[0] | int(0) == 1 }}"
+
+rest_command:
+  shpi_set_temp:
+    url: "http://192.168.1.11:9000/?set_temp={{ temperatuur }}"
+    method: get
