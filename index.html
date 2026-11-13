@@ -342,14 +342,14 @@ const CONFIG = {
     pollSeconds: 5,
   },
   entities: {
-    solarPower:   "sensor.solar_power",          // W, actueel vermogen zonnepanelen
-    solarToday:   "sensor.solar_energy_today",   // kWh vandaag
-    batterySoc:   "sensor.battery_soc",          // %
-    batteryPower: "sensor.battery_power",        // W, positief = laden, negatief = ontladen
-    gridPower:    "sensor.grid_power",           // W, positief = afname van net, negatief = teruglevering
-    homePower:    "",                            // W, optioneel: verbruik huis (voor de daggrafiek)
-    homeToday:    "sensor.home_energy_today",    // kWh vandaag (optioneel)
-    exportToday:  "sensor.grid_export_today",    // kWh vandaag (optioneel)
+    solarPower:   "sensor.solaredge_solar_power", // W of kW, actueel vermogen zonnepanelen
+    solarToday:   "sensor.solaredge_energy_today", // Wh of kWh vandaag
+    batterySoc:   "sensor.solaredge_storage_level", // %
+    batteryPower: "sensor.solaredge_storage_power", // W, positief = laden, negatief = ontladen
+    gridPower:    "sensor.solaredge_grid_power", // W, positief = afname van net, negatief = teruglevering
+    homePower:    "sensor.solaredge_power_consumption",                            // W, optioneel: verbruik huis (voor de daggrafiek)
+    homeToday:    "sensor.solaredge_consumed_energy", // kWh vandaag (optioneel)
+    exportToday:  "sensor.solaredge_exported_energy", // kWh vandaag (optioneel)
     // SHPI-thermostaat via de REST-koppeling uit homeassistant/shpi.yaml
     climate: { type: "shpi", current: "sensor.shpi_temperatuur", target: "sensor.shpi_ingestelde_temperatuur",
                relay: "binary_sensor.shpi_verwarming", setService: "rest_command/shpi_set_temp" },
@@ -492,15 +492,19 @@ async function ha(path, opts = {}) {
 let STATES = {};
 const st = id => STATES[id];
 const nv = id => { const s = st(id); const v = s ? parseFloat(s.state) : NaN; return isNaN(v) ? null : v; };
+// eenheden gelijk trekken: vermogen altijd in W, energie altijd in kWh
+const unitOf = id => ((st(id) || {}).attributes || {}).unit_of_measurement || "";
+const nW = id => { const v = nv(id); if (v == null) return null; const u = unitOf(id); return u === "kW" ? v * 1000 : u === "MW" ? v * 1e6 : v; };
+const nkWh = id => { const v = nv(id); if (v == null) return null; const u = unitOf(id); return u === "Wh" ? v / 1000 : u === "MWh" ? v * 1000 : v; };
 async function pollHA() {
   try {
     const arr = await ha("/api/states");
     STATES = Object.fromEntries(arr.map(s => [s.entity_id, s]));
     const E = CONFIG.entities;
     if (st(E.solarPower) || st(E.batterySoc)) {
-      const solar = nv(E.solarPower) ?? 0, batt = nv(E.batteryPower) ?? 0, grid = nv(E.gridPower) ?? 0;
+      const solar = nW(E.solarPower) ?? 0, batt = nW(E.batteryPower) ?? 0, grid = nW(E.gridPower) ?? 0;
       S.energy = { ...(S.energy || {}), solar, batt, grid, soc: nv(E.batterySoc), home: Math.max(0, solar + grid - batt),
-        solarToday: nv(E.solarToday), homeToday: nv(E.homeToday), exportToday: nv(E.exportToday) };
+        solarToday: nkWh(E.solarToday), homeToday: nkWh(E.homeToday), exportToday: nkWh(E.exportToday) };
       S.src.energy = "live";
     }
     const sh = typeof E.climate === "object" ? E.climate : null;
@@ -538,9 +542,10 @@ async function loadSolarHistory() {
     const series = {};
     (h || []).forEach(arr => { if (!arr.length) return; const id = arr[0].entity_id; series[id] = arr.map(p => [new Date(p.last_changed || p.lu * 1000).getTime(), parseFloat(p.state ?? p.s)]).filter(p => !isNaN(p[1])); });
     if (S.energy) {
-      S.energy.curve = (series[E.solarPower] || []).map(([t, v]) => [t, v / 1000]);
+      const toKW = id => unitOf(id) === "kW" ? 1 : 1 / 1000;
+      S.energy.curve = (series[E.solarPower] || []).map(([t, v]) => [t, v * toKW(E.solarPower)]);
       S.energy.socCurve = series[E.batterySoc] || [];
-      S.energy.useCurve = (series[E.homePower] || []).map(([t, v]) => [t, v / 1000]);
+      S.energy.useCurve = (series[E.homePower] || []).map(([t, v]) => [t, v * toKW(E.homePower)]);
     }
     render();
   } catch (e) { console.warn(e); }
