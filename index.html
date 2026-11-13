@@ -177,6 +177,81 @@ svg text{font-family:var(--f-mono)}
 @media (max-width:640px){.rxbody{padding-right:max(24px,env(safe-area-inset-right,0px));padding-top:100px}.ingr{grid-template-columns:1fr}.steps li{grid-template-columns:40px minmax(0,1fr)}}
 body.part{display:flex;height:100%}
 body.part .wrap{flex:none}
+
+/* =================== DIEPTE & BEWEGING =================== */
+:root{--ease-out:cubic-bezier(.2,.8,.2,1);--btn-top:#23272c;--btn-bot:#15181b;--btn-edge:#060708}
+/* drukknoppen: licht van boven, dikke onderrand, zakt in bij indrukken */
+.key,.tab,.seg-btn,.tbtn,.tchip,.alarm button,.rxback{
+  position:relative;border:1px solid #3a3f45;border-bottom-color:#2a2e33;
+  background:linear-gradient(180deg,var(--btn-top),var(--btn-bot));
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.09),0 4px 0 var(--btn-edge),0 7px 14px -4px rgba(0,0,0,.7);
+  transform:translateY(0);transition:transform .09s var(--ease-out),box-shadow .09s var(--ease-out),filter .15s,border-color .15s;
+  border-radius:6px;margin-bottom:4px}
+.key:active,.tab:active,.seg-btn:active,.tbtn:active,.tchip:active,.alarm button:active,.rxback:active,.is-pressed{
+  transform:translateY(4px)!important;box-shadow:inset 0 2px 4px rgba(0,0,0,.5),0 0 0 var(--btn-edge),0 2px 4px -2px rgba(0,0,0,.6)!important}
+@media (hover:hover){.key:hover,.tab:hover,.seg-btn:hover,.tbtn:hover,.tchip:hover,.rxback:hover{filter:brightness(1.18)}}
+.tab[aria-pressed="true"],.seg-btn[aria-pressed="true"]{color:#111;border-color:#ffc94d;background:linear-gradient(180deg,#ffc53d,#e89b00);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.45),0 4px 0 #8a5700,0 7px 14px -4px rgba(0,0,0,.7)}
+.key{width:66px;height:52px;font-size:28px;border-radius:8px}
+.key.up{color:#ffb38a} .key.down{color:#8cc8ff}
+.key[aria-disabled="true"]{opacity:.45}
+.tbtn{color:var(--amber);border-color:#6b5320;background:linear-gradient(180deg,#2a241a,#18150f);box-shadow:inset 0 1px 0 rgba(255,210,120,.12),0 5px 0 #0a0805,0 9px 16px -4px rgba(0,0,0,.75)}
+.tbtn.on{background:linear-gradient(180deg,#3a2f17,#231c0d);color:var(--fg)}
+.tbtn.done,.tchip.done{color:#111;background:linear-gradient(180deg,#ffc53d,#e89b00);border-color:#ffc94d;box-shadow:inset 0 1px 0 rgba(255,255,255,.45),0 5px 0 #8a5700,0 9px 16px -4px rgba(0,0,0,.75)}
+.tchip{border-color:#6b5320}
+.alarm button{background:linear-gradient(180deg,#2a2d31,#0e0f11);border:1px solid #000;box-shadow:inset 0 1px 0 rgba(255,255,255,.15),0 5px 0 #000,0 8px 16px -4px rgba(0,0,0,.6)}
+
+/* tegels: komen naar voren bij zweven, veren in bij aanraken */
+.rtile,.p{transition:transform .22s var(--ease-out),box-shadow .22s var(--ease-out),border-color .22s}
+.rtile{border-radius:10px;background:linear-gradient(180deg,#14171b,#0f1114);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.05),0 2px 0 #050607,0 10px 24px -14px rgba(0,0,0,.9)}
+@media (hover:hover){
+  .rtile:hover{transform:translateY(-6px) scale(1.015);border-color:#4a4f56;
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.08),0 2px 0 #050607,0 26px 40px -18px rgba(0,0,0,.95),0 0 0 1px rgba(255,176,0,.15)}
+  .rtile:hover .rtitle{color:#fff}
+}
+.rtile:active{transform:translateY(1px) scale(.985)}
+.rtile.launch{transform:translateY(-10px) scale(1.06)!important;z-index:5;border-color:var(--amber);
+  box-shadow:0 40px 60px -20px rgba(0,0,0,.95),0 0 0 2px var(--amber)!important;transition:transform .18s var(--ease-out),box-shadow .18s}
+.rtile .rgo{position:absolute;right:18px;top:18px;width:40px;height:40px;border-radius:50%;display:grid;place-items:center;
+  border:1px solid #3a3f45;color:var(--amber);font-size:20px;transition:transform .22s var(--ease-out),background .22s}
+@media (hover:hover){.rtile:hover .rgo{transform:translateX(4px);background:rgba(255,176,0,.12)}}
+.rtile{position:relative}
+
+/* schermovergangen */
+@keyframes slideInR{from{transform:translateX(100%);opacity:.6}to{transform:none;opacity:1}}
+@keyframes slideOutR{from{transform:none;opacity:1}to{transform:translateX(100%);opacity:.4}}
+@keyframes backIn{from{transform:translateX(-6%) scale(.97);opacity:0}to{transform:none;opacity:1}}
+@keyframes fromRight{from{transform:translateX(5%);opacity:0}to{transform:none;opacity:1}}
+@keyframes fromLeft{from{transform:translateX(-5%);opacity:0}to{transform:none;opacity:1}}
+.rxfull{box-shadow:-30px 0 60px rgba(0,0,0,.6)}
+.rxfull.enter{animation:slideInR .36s var(--ease-out) both}
+.rxfull.leave{animation:slideOutR .28s cubic-bezier(.4,0,1,1) both}
+.rtiles.back{animation:backIn .34s var(--ease-out) both}
+.anim-right{animation:fromRight .32s var(--ease-out) both}
+.anim-left{animation:fromLeft .32s var(--ease-out) both}
+
+/* trillen bij iets wat niet mag */
+@keyframes shake{10%,90%{transform:translateX(-2px)}20%,80%{transform:translateX(4px)}30%,50%,70%{transform:translateX(-7px)}40%,60%{transform:translateX(7px)}}
+.shake{animation:shake .42s cubic-bezier(.36,.07,.19,.97) both!important}
+
+/* duidelijke terugknop */
+.rxclose{display:none}
+.rxtop{position:sticky;top:0;z-index:52;display:flex;align-items:center;gap:18px;
+  padding:14px max(20px,env(safe-area-inset-right,0px)) 12px max(20px,env(safe-area-inset-left,0px));
+  background:linear-gradient(180deg,rgba(11,12,14,.98) 70%,rgba(11,12,14,0));}
+.rxback{appearance:none;display:inline-flex;align-items:center;gap:14px;min-height:72px;padding:0 28px 0 20px;cursor:pointer;
+  font:600 22px var(--f-ui);color:#111;border-color:#ffc94d;background:linear-gradient(180deg,#ffc53d,#e89b00);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.45),0 5px 0 #8a5700,0 10px 20px -4px rgba(0,0,0,.7);border-radius:10px}
+.rxback svg{width:30px;height:30px}
+.rxtop .rxt{font:500 15px var(--f-ui);letter-spacing:.14em;text-transform:uppercase;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rxbody{padding-top:8px;padding-right:max(24px,env(safe-area-inset-right,0px))}
+@media (max-width:640px){.rxbody{padding-top:8px}.rxback{min-height:62px;font-size:19px;padding:0 20px 0 14px}.rxtop .rxt{display:none}}
+
+@media (prefers-reduced-motion:reduce){
+  .rxfull.enter,.rxfull.leave,.rtiles.back,.anim-right,.anim-left,.shake{animation:none!important}
+  .rtile,.p,.key,.tab,.seg-btn,.tbtn,.tchip,.rxback{transition:none}
+}
 </style>
 
 <div class="wrap" id="app">
@@ -209,8 +284,8 @@ body.part .wrap{flex:none}
     <div class="cbody">
       <div class="gauge"><svg id="c-gauge" viewBox="0 0 200 200"></svg></div>
       <div class="ctrl">
-        <button class="key" id="c-up" aria-label="Warmer">+</button>
-        <button class="key" id="c-down" aria-label="Kouder">−</button>
+        <button class="key up" id="c-up" aria-label="Warmer">+</button>
+        <button class="key down" id="c-down" aria-label="Kouder">−</button>
         <div class="tbl" id="c-tbl" style="grid-template-columns:auto auto;margin-top:6px"></div>
       </div>
     </div>
@@ -239,7 +314,7 @@ body.part .wrap{flex:none}
 </div>
 
 <div class="rxfull" id="rx-full" hidden role="dialog" aria-modal="true" aria-label="Recept">
-  <button class="rxclose" id="rx-close" aria-label="Recept sluiten">×</button>
+  <div class="rxtop"><button class="rxback" id="rx-close" aria-label="Terug naar de recepten"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M11 5l-7 7 7 7"/></svg>Terug</button><span class="rxt" id="rx-toptitle"></span></div>
   <div class="rxbody" id="rx-body"></div>
 </div>
 <div class="alarm" id="rx-alarm" hidden role="alert"><div><h3>Timer klaar</h3><div id="rx-alarm-list"></div></div><button id="rx-alarm-stop">Stoppen</button></div>
@@ -476,10 +551,12 @@ async function loadAgenda() {
   } catch (e) { console.warn(e); }
 }
 let climateBusy = false, climateTimer;
-function setTarget(delta) {
+function setTarget(delta, btn) {
   const c = S.climate; if (!c) return;
-  const step = c.step || .5;
-  c.target = Math.min(c.max, Math.max(c.min, Math.round((c.target + delta) / step) * step));
+  const step = c.step || .5, [lo, hi] = CONFIG.climateRange;
+  const nt = Math.min(Math.min(c.max, hi), Math.max(Math.max(c.min, lo), Math.round((c.target + delta) / step) * step));
+  if (nt === c.target) { if (typeof shake === "function") shake(btn); return; }
+  c.target = nt;
   if (!LIVE) c.action = c.target > c.current ? "heating" : "idle";
   render();
   if (!LIVE) return;
@@ -624,6 +701,7 @@ function renderClimate() {
   m += `<circle cx="100" cy="100" r="5" fill="${C.fg}"/>`;
   m += `<text x="100" y="144" text-anchor="middle" font-weight="300" font-size="26" fill="${C.fg}">${c.target == null ? "–" : fmt(c.target, 1)}</text><text x="100" y="160" text-anchor="middle" font-size="8.5" letter-spacing="2" fill="${C.muted}" font-family="Inter Tight">DOEL °C</text>`;
   $("c-gauge").innerHTML = m;
+  $("c-up").setAttribute("aria-disabled", c.target >= Math.min(c.max, hi)); $("c-down").setAttribute("aria-disabled", c.target <= Math.max(c.min, lo));
   $("c-tbl").innerHTML = `<span>Nu</span><b>${fmt(c.current, 1)}°</b><span>Doel</span><b class="a">${fmt(c.target, 1)}°</b>`;
   const names = { comfort: "Comfort", eco: "Eco", away: "Afwezig", home: "Thuis", sleep: "Slapen", boost: "Boost", none: "Handmatig" };
   $("c-modes").innerHTML = (c.presets || []).slice(0, 4).map(p => `<button class="seg-btn" id="preset-${p}" data-p="${p}" aria-pressed="${p === c.preset}">${names[p] || p}</button>`).join("");
@@ -864,13 +942,18 @@ function renderTimers() {
 let VIEW = "huis", OPEN = null;
 try { VIEW = localStorage.getItem("hs-view") || "huis"; } catch (e) {}
 function setView(v) {
-  VIEW = v; try { localStorage.setItem("hs-view", v); } catch (e) {}
+  const prev = VIEW; VIEW = v; try { localStorage.setItem("hs-view", v); } catch (e) {}
   $("app").classList.toggle("mode-rx", v === "recepten");
+  if (prev !== v && !reduceMotion()) {
+    const els = v === "recepten" ? [document.querySelector(".rx")] : [...document.querySelectorAll(".wrap > .p")];
+    els.forEach(el => { el.classList.remove("anim-right", "anim-left"); void el.offsetWidth; el.classList.add(v === "recepten" ? "anim-right" : "anim-left"); setTimeout(() => el.classList.remove("anim-right", "anim-left"), 400); });
+  }
   document.querySelectorAll("[data-view]").forEach(b => b.setAttribute("aria-pressed", b.dataset.view === v));
   if (v === "huis") render();
 }
 function renderTiles() {
   $("rx-tiles").innerHTML = RECIPES.map(r => `<button class="rtile" id="tile-${r.id}" data-open="${r.id}">
+      <span class="rgo" aria-hidden="true">→</span>
       <span class="rwhen">${esc(r.when)}</span>
       <span class="rtitle">${esc(r.title)}</span>
       ${r.sub ? `<span class="rsub">${esc(r.sub)}</span>` : ""}
@@ -880,8 +963,30 @@ function renderTiles() {
       ${r.warn.length ? `<span class="rwarn">⚠ Let op: geen vis of garnaal</span>` : `<span class="rok">Geen vis, garnaal of kaas</span>`}
     </button>`).join("");
 }
-function openRecipe(id) { OPEN = id; $("rx-full").hidden = false; renderRecipe(); $("rx-full").scrollTop = 0; $("rx-close").focus(); }
-function closeRecipe() { OPEN = null; $("rx-full").hidden = true; }
+const reduceMotion = () => window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+let busy = false;
+function openRecipe(id, tile) {
+  if (busy) return; busy = true;
+  const go = () => {
+    OPEN = id; const f = $("rx-full"); f.hidden = false; f.classList.remove("leave"); f.classList.add("enter");
+    renderRecipe(); f.scrollTop = 0; $("rx-toptitle").textContent = RECIPES.find(x => x.id === id).title;
+    setTimeout(() => { f.classList.remove("enter"); tile && tile.classList.remove("launch"); busy = false; $("rx-close").focus({ preventScroll: true }); }, reduceMotion() ? 0 : 380);
+  };
+  if (tile && !reduceMotion()) { tile.classList.add("launch"); setTimeout(go, 170); } else go();
+}
+function closeRecipe() {
+  if (!OPEN || busy) return; busy = true;
+  const f = $("rx-full");
+  const done = () => { f.hidden = true; f.classList.remove("leave"); OPEN = null; busy = false;
+    const t = $("rx-tiles"); t.classList.remove("back"); void t.offsetWidth; t.classList.add("back"); };
+  if (reduceMotion()) return done();
+  f.classList.add("leave"); setTimeout(done, 270);
+}
+function shake(el) {
+  if (!el) return; el.classList.remove("shake"); void el.offsetWidth; el.classList.add("shake");
+  setTimeout(() => el.classList.remove("shake"), 450);
+  try { navigator.vibrate?.(60); } catch (e) {}
+}
 function renderRecipe() {
   if (!OPEN) return;
   const r = RECIPES.find(x => x.id === OPEN), now = Date.now();
@@ -904,8 +1009,10 @@ function renderRecipe() {
 function initRecipes() {
   renderTiles(); renderTimers(); checkAlarm();
   document.addEventListener("click", e => {
-    const v = e.target.closest("[data-view]"); if (v) return setView(v.dataset.view);
-    const o = e.target.closest("[data-open]"); if (o) { if (VIEW !== "recepten") setView("recepten"); return openRecipe(o.dataset.open); }
+    const v = e.target.closest("[data-view]"); if (v) { if (v.dataset.view === VIEW) return shake(v); return setView(v.dataset.view); }
+    const o = e.target.closest("[data-open]"); if (o) { if (VIEW !== "recepten") setView("recepten"); return openRecipe(o.dataset.open, o.classList.contains("rtile") ? o : null); }
+    // tikken op iets wat niets doet: het paneel trilt kort
+    const p = e.target.closest(".p, .led, .rxnote"); if (p && !e.target.closest("button")) return shake(p);
     const s = e.target.closest("[data-start]"); if (s) { const [rid, si, min, lab] = s.dataset.start.split("|"); return startTimer(rid, +si, +min, lab); }
     const x = e.target.closest("[data-stop]"); if (x) return stopTimer(x.dataset.stop);
   });
@@ -987,8 +1094,8 @@ function start() {
     if (S.src.printer !== "live") S.printer = demoPrinter();
     render();
   }, 5000);
-  $("c-up").addEventListener("click", () => setTarget(+(S.climate?.step || .5)));
-  $("c-down").addEventListener("click", () => setTarget(-(S.climate?.step || .5)));
+  $("c-up").addEventListener("click", e => setTarget(+(S.climate?.step || .5), e.currentTarget));
+  $("c-down").addEventListener("click", e => setTarget(-(S.climate?.step || .5), e.currentTarget));
   $("w-toggle").addEventListener("click", e => { const b = e.target.closest("[data-i]"); if (b) setPlace(+b.dataset.i); });
   $("c-modes").addEventListener("click", e => { const b = e.target.closest("[data-p]"); if (b) setPreset(b.dataset.p); });
   initRecipes();
