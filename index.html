@@ -15,6 +15,7 @@
   color-scheme:dark;
 }
 html,body{height:100%}
+[hidden]{display:none!important}
 body{background:var(--bg);color:var(--text);font:13px/1.4 var(--f-ui);-webkit-font-smoothing:antialiased;user-select:none;-webkit-tap-highlight-color:transparent}
 .wrap{min-height:100%;height:100%;box-sizing:border-box;padding-block:18px 22px;
   padding-left:max(22px,env(safe-area-inset-left,0px));padding-right:max(22px,env(safe-area-inset-right,0px));
@@ -107,6 +108,73 @@ svg text{font-family:var(--f-mono)}
   .ro{grid-template-columns:repeat(2,minmax(0,1fr))} .ro div:nth-child(2){border-right:0} .ro div:nth-child(-n+2){border-bottom:1px solid var(--line)}
   .top .leds{margin-left:0}
 }
+
+/* ---------- weergave-knoppen + timerbalk ---------- */
+.tabs{display:flex;gap:6px}
+.tab{appearance:none;border:1px solid var(--key-line);background:transparent;color:var(--muted);border-radius:3px;padding:8px 14px;font:500 11px var(--f-ui);letter-spacing:.16em;text-transform:uppercase;cursor:pointer}
+.tab[aria-pressed="true"]{border-color:var(--amber);color:var(--amber)}
+.timerbar{flex-basis:100%;display:flex;gap:8px;flex-wrap:wrap;letter-spacing:0;text-transform:none}
+.tchip{appearance:none;display:inline-flex;align-items:center;gap:10px;border:1px solid var(--amber);background:rgba(255,176,0,.08);color:var(--text);border-radius:3px;padding:8px 12px;font:500 13px var(--f-ui);cursor:pointer}
+.tchip b{color:var(--amber);font-size:16px;font-weight:500}
+.tchip.done{background:var(--amber);color:#111}.tchip.done b{color:#111}
+/* ---------- recepten op het homescreen ---------- */
+.rx{display:none;grid-column:1/-1;grid-row:2/-1;min-height:0;flex-direction:column;gap:14px}
+.wrap.mode-rx > .p{display:none}
+.wrap.mode-rx .rx{display:flex}
+.rxhead{display:flex;align-items:baseline;gap:16px;flex-wrap:wrap}
+.rxhead h2{margin:0;font:600 24px var(--f-ui);color:var(--fg);letter-spacing:-.01em}
+.rxhead p{margin:0;color:var(--muted);font-size:15px}
+.rxnote{border:1px solid rgba(255,93,93,.45);background:rgba(255,93,93,.08);color:#ffd0d0;border-radius:3px;padding:12px 16px;font-size:16px;line-height:1.45}
+.rxnote b{color:#fff}
+.rtiles{flex:1;min-height:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px;align-content:stretch}
+.rtile{appearance:none;text-align:left;border:1px solid var(--line);background:var(--panel);border-radius:3px;padding:22px 22px 20px;color:var(--text);cursor:pointer;
+  display:flex;flex-direction:column;gap:8px;min-height:180px;transition:border-color .15s,transform .08s;font-family:var(--f-ui)}
+.rtile:hover{border-color:var(--key-line)} .rtile:active{transform:scale(.985)}
+.rtile:focus-visible,.tab:focus-visible,.tchip:focus-visible{outline:2px solid var(--amber);outline-offset:2px}
+.rwhen{font:500 12px var(--f-ui);letter-spacing:.14em;text-transform:uppercase;color:var(--amber)}
+.rtitle{font:600 clamp(26px,2.4vw,36px)/1.1 var(--f-ui);color:var(--fg);letter-spacing:-.01em}
+.rsub{color:var(--muted);font-size:15px}
+.rlist{margin-top:10px;color:var(--muted);font-size:16px;line-height:1.6}
+.rmeta{color:var(--muted);font:400 13px var(--f-mono)}
+.rtime{margin-top:auto;font-size:22px;color:var(--text)}
+.rwarn{font-size:14px;color:#ff9b9b}
+.rok{font-size:14px;color:var(--muted)}
+/* ---------- volledig recept ---------- */
+.rxfull{position:fixed;inset:0;z-index:50;background:var(--bg);overflow-y:auto;-webkit-overflow-scrolling:touch;
+  padding-top:env(safe-area-inset-top,0px);padding-bottom:max(40px,env(safe-area-inset-bottom,0px))}
+.rxclose{position:fixed;top:calc(16px + env(safe-area-inset-top,0px));right:max(16px,env(safe-area-inset-right,0px));z-index:51;width:76px;height:76px;border-radius:3px;
+  border:1px solid var(--key-line);background:#1a1d21;color:var(--fg);font:300 44px/1 var(--f-ui);display:grid;place-items:center;cursor:pointer}
+.rxclose:active{transform:scale(.95)}
+.rxclose:focus-visible,.tbtn:focus-visible,.alarm button:focus-visible{outline:2px solid var(--amber);outline-offset:3px}
+.rxbody{max-width:1040px;margin:0 auto;padding-block:28px 40px;padding-left:max(24px,env(safe-area-inset-left,0px));padding-right:max(110px,env(safe-area-inset-right,0px));
+  font:22px/1.5 var(--f-ui);color:var(--text)}
+.rxbody h1{margin:4px 0 6px;font:600 clamp(36px,5vw,56px)/1.05 var(--f-ui);color:var(--fg);letter-spacing:-.02em;text-wrap:balance}
+.rxbody h2{margin:34px 0 12px;font:500 15px var(--f-ui);letter-spacing:.18em;text-transform:uppercase;color:var(--muted);border-bottom:1px solid var(--line);padding-bottom:8px}
+.rxbody .rwhen{margin:0;font-size:15px}
+.forwho{margin:0;color:var(--muted);font-size:18px}
+.warnbox{margin-top:16px;border:1px solid rgba(255,93,93,.55);background:rgba(255,93,93,.1);color:#ffd6d6;border-radius:3px;padding:14px 18px;font-size:20px}
+.okbox{margin-top:10px;color:var(--muted);font-size:17px}
+.ingr{margin:0;padding:0;list-style:none;display:grid;grid-template-columns:repeat(auto-fit,minmax(380px,1fr));gap:0 28px}
+.ingr li{padding:10px 0;border-bottom:1px solid var(--line-2)}
+.steps{margin:0;padding:0;list-style:none;display:flex;flex-direction:column}
+.steps li{display:grid;grid-template-columns:56px minmax(0,1fr);gap:14px;padding:18px 0;border-bottom:1px solid var(--line-2)}
+.steps p{margin:0;font-size:24px;line-height:1.5;color:var(--fg)}
+.sn{font-size:30px;color:var(--amber);line-height:1.2}
+.tbtns{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+.tbtn{appearance:none;min-height:64px;padding:0 22px;border:1px solid var(--amber);background:transparent;color:var(--amber);border-radius:3px;font:500 19px var(--f-ui);cursor:pointer}
+.tbtn:active{transform:scale(.97)}
+.tbtn.on{background:rgba(255,176,0,.12);color:var(--fg)}
+.tbtn.on b{color:var(--amber);font-size:24px;font-weight:500;margin-right:6px}
+.tbtn.done{background:var(--amber);color:#111}.tbtn.done b{color:#111}
+/* ---------- wekker ---------- */
+.alarm{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:60;width:min(640px,calc(100vw - 32px));
+  background:var(--amber);color:#111;border-radius:4px;padding:22px 24px;display:flex;align-items:center;gap:18px;box-shadow:0 20px 60px rgba(0,0,0,.6);animation:pulse 1s ease-in-out infinite alternate}
+.alarm h3{margin:0 0 4px;font:700 26px var(--f-ui)}
+.alarm div div{font-size:18px}
+.alarm button{margin-left:auto;flex:none;min-height:72px;padding:0 28px;border:0;border-radius:3px;background:#111;color:var(--amber);font:600 22px var(--f-ui);cursor:pointer}
+@keyframes pulse{from{box-shadow:0 0 0 0 rgba(255,176,0,.6)}to{box-shadow:0 0 0 18px rgba(255,176,0,0)}}
+@media (prefers-reduced-motion:reduce){.alarm{animation:none}}
+@media (max-width:640px){.rxbody{padding-right:max(24px,env(safe-area-inset-right,0px));padding-top:100px}.ingr{grid-template-columns:1fr}.steps li{grid-template-columns:40px minmax(0,1fr)}}
 body.part{display:flex;height:100%}
 body.part .wrap{flex:none}
 </style>
@@ -114,8 +182,16 @@ body.part .wrap{flex:none}
 <div class="wrap" id="app">
   <header class="top">
     <span class="clk" id="clock">--:--</span><span id="date"></span><span id="place"></span>
+    <div class="tabs" role="group" aria-label="Weergave"><button class="tab" data-view="huis" id="tab-huis">Huis</button><button class="tab" data-view="recepten" id="tab-rx">Verjaardag 2026</button></div>
     <div class="leds" id="leds"></div>
+    <div class="timerbar" id="timerbar" hidden></div>
   </header>
+
+  <section class="rx" aria-label="Verjaardag 2026 recepten">
+    <div class="rxhead"><h2>Verjaardag 2026 recepten</h2><p>Voor 5 volwassenen en 2 kinderen (5 en 8 jaar). Tik op een recept.</p></div>
+    <div class="rxnote"><b>Let op voor moeder:</b> geen vis of garnaal. Controleer pasta's, sambal en satésaus op garnaal of trassi. <b>Zwager:</b> geen kaas.</div>
+    <div class="rtiles" id="rx-tiles"></div>
+  </section>
 
   <section class="p energy" aria-label="Energie">
     <h2>Energie <span class="st" id="e-state"></span></h2>
@@ -161,6 +237,12 @@ body.part .wrap{flex:none}
     <div class="ag" id="a-list"></div>
   </section>
 </div>
+
+<div class="rxfull" id="rx-full" hidden role="dialog" aria-modal="true" aria-label="Recept">
+  <button class="rxclose" id="rx-close" aria-label="Recept sluiten">×</button>
+  <div class="rxbody" id="rx-body"></div>
+</div>
+<div class="alarm" id="rx-alarm" hidden role="alert"><div><h3>Timer klaar</h3><div id="rx-alarm-list"></div></div><button id="rx-alarm-stop">Stoppen</button></div>
 
 <script>
 const CONFIG = {
@@ -626,6 +708,215 @@ function renderLeds() {
 
 function render() { renderEnergy(); renderClimate(); renderWeather(); renderPrinter(); renderAgenda(); renderLeds(); }
 
+/* =====================================================================
+   MODULE: Verjaardag 2026 recepten (keukentablet)
+   Timers onthouden hun eindtijd, dus ze lopen door als het scherm uit gaat of de pagina herlaadt.
+   ===================================================================== */
+const WARN_MOEDER = "Moeder: geen vis of garnaal. Controleer het etiket op garnaal of trassi.";
+const RECIPES = [
+  {
+    id: "rendang", title: "Rendang", when: "Vandaag koken", time: "± 3 uur",
+    warn: [WARN_MOEDER + " Geldt voor de rendang-kruidenpasta."],
+    ingr: [
+      "1 kg rundvlees voor stoven (riblap of draadjesvlees) in blokken van 3-4 cm",
+      "2 el zonnebloemolie",
+      "2 potten rendang-kruidenpasta (check etiket: een pot is vaak voor ± 500 g vlees)",
+      "800 ml kokosmelk",
+      "200 ml water",
+      "2 stengels sereh, plat geslagen",
+      "4 limoenblaadjes",
+      "1 tl suiker",
+      "1 tl zout",
+    ],
+    steps: [
+      { t: "Vlees droogdeppen en in 2 porties bruin aanbakken in de olie (10 min).", timers: [10] },
+      { t: "Alles terug in de pan, pasta toevoegen, 2 min meebakken.", timers: [2] },
+      { t: "Kokosmelk, water, sereh, limoenblad, suiker en zout erbij, aan de kook brengen." },
+      { t: "Zacht sudderen met half open deksel, 2 uur, elke 20 min roeren.", timers: [120, [20, "Roeren"]] },
+      { t: "Deksel eraf, nog 40-45 min inkoken tot het vlees mals is en de saus bijna weg en donkerbruin is.", timers: [40, 45] },
+      { t: "Sereh en limoenblad eruit, afkoelen, in de koelkast." },
+      { t: "Morgen om 17:30 zachtjes opwarmen met een scheutje water, ± 20 min.", timers: [20] },
+    ],
+  },
+  {
+    id: "sate", title: "Kip saté met pindasaus", when: "Morgen, 18:00", time: "8-10 min grillen",
+    warn: [WARN_MOEDER + " Geldt voor de sambal oelek en de satésaus of pindasaus."],
+    ingr: [
+      "800 g kipdijfilet in blokjes",
+      "3 el ketjap manis",
+      "1 el olie",
+      "1 tl sambal oelek",
+      "sateprikkers",
+      "1 pot satésaus of pindasaus",
+    ],
+    steps: [
+      { t: "Kip mengen met ketjap, olie en sambal, vandaag al in de koelkast marineren." },
+      { t: "Aan de prikkers steken." },
+      { t: "Morgen onder de grill of in de pan: 8-10 min, halverwege draaien.", timers: [[4, "Draaien"], 8, 10] },
+      { t: "Pindasaus opwarmen met een scheutje water of kokosmelk." },
+    ],
+  },
+  {
+    id: "rijst", title: "Rijst en bijgerechten", when: "Morgen, 17:30-18:15", time: "± 45 min",
+    warn: [WARN_MOEDER + " Geldt voor de sambal oelek en de atjar."],
+    ingr: [
+      "600 g rijst (jasmijn of basmati)",
+      "500 g sperziebonen",
+      "300 g taugé",
+      "2 wortelen",
+      "3 paprika's",
+      "1 komkommer",
+      "8 eieren",
+      "1 pot atjar",
+      "sambal oelek",
+      "gefrituurde uitjes",
+      "emping",
+    ],
+    steps: [
+      { t: "Rijst spoelen en koken volgens verpakking (ongeveer 12 min, daarna 10 min laten rusten, deksel erop).", timers: [[12, "Rijst koken"], [10, "Rijst rusten"]] },
+      { t: "Eieren 9 min hard koken.", timers: [9] },
+      { t: "Bonen 5 min koken, taugé 1 min blancheren.", timers: [[5, "Bonen"], [1, "Taugé"]] },
+      { t: "Wortel, paprika en komkommer rauw in repen of plakjes." },
+      { t: "Alles los in schaaltjes op tafel; sambal, atjar, uitjes en emping apart. Niets door elkaar mengen, zodat iedereen zelf kiest." },
+    ],
+  },
+  {
+    id: "tatin", title: "Tarte tatin", when: "Morgen, 15:30", sub: "cakevorm + muffinvorm", time: "± 1 uur",
+    warn: [],
+    ingr: [
+      "8-10 stevige appels (Elstar, Jonagold of Goudreinette), geschild en in partjes",
+      "1 pak bladerdeeg (ontdooid)",
+      "250 g suiker",
+      "125 g boter",
+      "kaneel",
+      "1 citroen (sap)",
+    ],
+    steps: [
+      { t: "Appels met citroensap en kaneel mengen." },
+      { t: "Per vorm een karamel maken in een steelpan (cakevorm: 150 g suiker + 75 g boter; muffinvorm: 100 g suiker + 50 g boter) tot goudbruin en in de vormen gieten." },
+      { t: "Appelpartjes dicht tegen elkaar in de karamel leggen, bolle kant omlaag." },
+      { t: "Bladerdeeg erover, randen naar binnen stoppen." },
+      { t: "Oven 200 °C: muffins 20-25 min, cakevorm 30-35 min.", timers: [[20, "Muffins"], [30, "Cakevorm"]] },
+      { t: "5-10 min laten rusten, mes langs de rand, omkeren op een schaal.", timers: [5, 10] },
+      { t: "Voor het toetje (19:45) 10 min opwarmen op 160-180 °C, daarna serveren met vanille-ijs, slagroom, karamelsaus, walnoten en speculaas.", timers: [10] },
+    ],
+  },
+];
+
+/* ---------- timers ---------- */
+let TIMERS = [];
+try { TIMERS = JSON.parse(localStorage.getItem("hs-timers") || "[]"); } catch (e) {}
+const saveTimers = () => { try { localStorage.setItem("hs-timers", JSON.stringify(TIMERS)); } catch (e) {} };
+let audioCtx = null, alarmLoop = null;
+function unlockAudio() { try { audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)(); audioCtx.resume?.(); } catch (e) {} }
+function beep() {
+  if (!audioCtx) return;
+  const t0 = audioCtx.currentTime;
+  [0, .28, .56].forEach((d, i) => {
+    const o = audioCtx.createOscillator(), g = audioCtx.createGain();
+    o.type = "square"; o.frequency.value = i === 2 ? 1320 : 990;
+    g.gain.setValueAtTime(0, t0 + d); g.gain.linearRampToValueAtTime(.35, t0 + d + .02); g.gain.linearRampToValueAtTime(0, t0 + d + .22);
+    o.connect(g).connect(audioCtx.destination); o.start(t0 + d); o.stop(t0 + d + .25);
+  });
+}
+const mmss = s => { s = Math.max(0, Math.ceil(s)); const h = Math.floor(s / 3600), m = Math.floor(s % 3600 / 60), x = s % 60; return (h ? h + ":" + String(m).padStart(2, "0") : m) + ":" + String(x).padStart(2, "0"); };
+function startTimer(rid, si, min, label) {
+  unlockAudio();
+  try { if ("Notification" in window && Notification.permission === "default") Notification.requestPermission(); } catch (e) {}
+  const r = RECIPES.find(x => x.id === rid);
+  const key = `${rid}-${si}-${min}`;
+  TIMERS = TIMERS.filter(t => t.key !== key);
+  TIMERS.push({ key, rid, si, min, end: Date.now() + min * 60e3, name: `${r.title} · stap ${si + 1}${label ? " · " + label : ""}`, done: false });
+  saveTimers(); renderTimers(); renderRecipe();
+}
+function stopTimer(key) { TIMERS = TIMERS.filter(t => t.key !== key); saveTimers(); renderTimers(); renderRecipe(); checkAlarm(); }
+function fireTimer(t) {
+  t.done = true; saveTimers();
+  try { if ("Notification" in window && Notification.permission === "granted") new Notification("Timer klaar", { body: t.name, tag: t.key, requireInteraction: true }); } catch (e) {}
+  try { navigator.vibrate?.([400, 200, 400, 200, 800]); } catch (e) {}
+  checkAlarm();
+}
+function checkAlarm() {
+  const ringing = TIMERS.filter(t => t.done);
+  const box = $("rx-alarm");
+  if (ringing.length) {
+    box.hidden = false;
+    $("rx-alarm-list").innerHTML = ringing.map(t => `<div>${esc(t.name)}</div>`).join("");
+    if (!alarmLoop) { beep(); alarmLoop = setInterval(beep, 1400); }
+  } else {
+    box.hidden = true;
+    clearInterval(alarmLoop); alarmLoop = null;
+  }
+}
+function tickTimers() {
+  const now = Date.now();
+  TIMERS.forEach(t => { if (!t.done && t.end <= now) fireTimer(t); });
+  renderTimers();
+  document.querySelectorAll("[data-cd]").forEach(el => { const t = TIMERS.find(x => x.key === el.dataset.cd); if (t) el.textContent = t.done ? "Klaar!" : mmss((t.end - now) / 1000); });
+}
+function renderTimers() {
+  const now = Date.now(), act = TIMERS.slice().sort((a, b) => a.end - b.end);
+  $("timerbar").innerHTML = act.map(t => `<button class="tchip ${t.done ? "done" : ""}" data-open="${t.rid}" id="tchip-${t.key}"><b class="mono">${t.done ? "KLAAR" : mmss((t.end - now) / 1000)}</b>${esc(t.name)}</button>`).join("");
+  $("timerbar").hidden = !act.length;
+}
+
+/* ---------- weergave ---------- */
+let VIEW = "huis", OPEN = null;
+try { VIEW = localStorage.getItem("hs-view") || "huis"; } catch (e) {}
+function setView(v) {
+  VIEW = v; try { localStorage.setItem("hs-view", v); } catch (e) {}
+  $("app").classList.toggle("mode-rx", v === "recepten");
+  document.querySelectorAll("[data-view]").forEach(b => b.setAttribute("aria-pressed", b.dataset.view === v));
+  if (v === "huis") render();
+}
+function renderTiles() {
+  $("rx-tiles").innerHTML = RECIPES.map(r => `<button class="rtile" id="tile-${r.id}" data-open="${r.id}">
+      <span class="rwhen">${esc(r.when)}</span>
+      <span class="rtitle">${esc(r.title)}</span>
+      ${r.sub ? `<span class="rsub">${esc(r.sub)}</span>` : ""}
+      <span class="rlist">${r.ingr.slice(0, 4).map(i => esc(i.split(/[,(;]/)[0])).join("<br>")}${r.ingr.length > 4 ? `<br>+ ${r.ingr.length - 4} meer` : ""}</span>
+      <span class="rtime mono">${esc(r.time)}</span>
+      <span class="rmeta">${r.steps.length} stappen · ${r.steps.reduce((n, x) => n + (x.timers || []).length, 0)} timers</span>
+      ${r.warn.length ? `<span class="rwarn">⚠ Let op: geen vis of garnaal</span>` : `<span class="rok">Geen vis, garnaal of kaas</span>`}
+    </button>`).join("");
+}
+function openRecipe(id) { OPEN = id; $("rx-full").hidden = false; renderRecipe(); $("rx-full").scrollTop = 0; $("rx-close").focus(); }
+function closeRecipe() { OPEN = null; $("rx-full").hidden = true; }
+function renderRecipe() {
+  if (!OPEN) return;
+  const r = RECIPES.find(x => x.id === OPEN), now = Date.now();
+  $("rx-body").innerHTML = `
+    <p class="rwhen">${esc(r.when)}${r.sub ? " · " + esc(r.sub) : ""} · <span class="mono">${esc(r.time)}</span></p>
+    <h1>${esc(r.title)}</h1>
+    <p class="forwho">Voor 5 volwassenen en 2 kinderen (5 en 8 jaar)</p>
+    ${r.warn.map(w => `<div class="warnbox">⚠ ${esc(w)}</div>`).join("")}
+    <div class="okbox">Zwager: geen kaas. In dit recept zit geen kaas.</div>
+    <h2>Ingrediënten</h2>
+    <ul class="ingr">${r.ingr.map(i => `<li>${esc(i)}</li>`).join("")}</ul>
+    <h2>Bereiding</h2>
+    <ol class="steps">${r.steps.map((s, si) => `<li><span class="sn mono">${si + 1}</span><div><p>${esc(s.t)}</p>${(s.timers || []).length ? `<div class="tbtns">${s.timers.map(tm => {
+      const [min, lab] = Array.isArray(tm) ? tm : [tm, ""]; const key = `${r.id}-${si}-${min}`, run = TIMERS.find(t => t.key === key);
+      const nm = (lab ? lab + " · " : "") + (min >= 60 ? (min / 60) + " uur" : min + " min");
+      return run ? `<button class="tbtn on ${run.done ? "done" : ""}" data-stop="${key}" id="tb-${key}"><b class="mono" data-cd="${key}">${run.done ? "Klaar!" : mmss((run.end - now) / 1000)}</b> ${esc(nm)} · stoppen</button>`
+                 : `<button class="tbtn" data-start="${r.id}|${si}|${min}|${esc(lab)}" id="tb-${key}">Timer starten · ${esc(nm)}</button>`;
+    }).join("")}</div>` : ""}</div></li>`).join("")}</ol>`;
+}
+function initRecipes() {
+  renderTiles(); renderTimers(); checkAlarm();
+  document.addEventListener("click", e => {
+    const v = e.target.closest("[data-view]"); if (v) return setView(v.dataset.view);
+    const o = e.target.closest("[data-open]"); if (o) { if (VIEW !== "recepten") setView("recepten"); return openRecipe(o.dataset.open); }
+    const s = e.target.closest("[data-start]"); if (s) { const [rid, si, min, lab] = s.dataset.start.split("|"); return startTimer(rid, +si, +min, lab); }
+    const x = e.target.closest("[data-stop]"); if (x) return stopTimer(x.dataset.stop);
+  });
+  $("rx-close").addEventListener("click", closeRecipe);
+  $("rx-alarm-stop").addEventListener("click", () => { TIMERS = TIMERS.filter(t => !t.done); saveTimers(); renderTimers(); renderRecipe(); checkAlarm(); });
+  document.addEventListener("keydown", e => { if (e.key === "Escape" && OPEN) closeRecipe(); });
+  document.addEventListener("visibilitychange", () => { if (document.visibilityState === "visible") tickTimers(); });
+  setInterval(tickTimers, 500);
+  setView(VIEW);
+}
+
 /* ---------- schermindeling ----------
    ?breedte=60          scherm gebruikt 60% van de breedte (bijv. naast je bureaubladiconen)
    ?positie=rechts      links | midden | rechts
@@ -700,6 +991,7 @@ function start() {
   $("c-down").addEventListener("click", () => setTarget(-(S.climate?.step || .5)));
   $("w-toggle").addEventListener("click", e => { const b = e.target.closest("[data-i]"); if (b) setPlace(+b.dataset.i); });
   $("c-modes").addEventListener("click", e => { const b = e.target.closest("[data-p]"); if (b) setPreset(b.dataset.p); });
+  initRecipes();
   const wake = async () => { try { await navigator.wakeLock?.request("screen"); } catch (e) {} };
   wake(); document.addEventListener("visibilitychange", () => document.visibilityState === "visible" && wake());
 }
