@@ -252,6 +252,17 @@ body.part .wrap{flex:none}
   .rxfull.enter,.rxfull.leave,.rtiles.back,.anim-right,.anim-left,.shake{animation:none!important}
   .rtile,.p,.key,.tab,.seg-btn,.tbtn,.tchip,.rxback{transition:none}
 }
+
+/* recept: vaste kopbalk, alleen de inhoud scrollt; blijft binnen het schermvak */
+.rxfull{display:flex;flex-direction:column;overflow:hidden!important}
+.rxfull[hidden]{display:none!important}
+.rxtop{position:relative;flex:none;background:var(--bg);border-bottom:1px solid var(--line);padding-bottom:14px}
+.rxscroll{flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;cursor:grab}
+.rxscroll.dragging{cursor:grabbing;user-select:none}
+.rxnav{margin-left:auto;display:flex;gap:10px}
+.rxs{padding:0;width:72px;justify-content:center;color:var(--fg);border-color:#3a3f45;background:linear-gradient(180deg,var(--btn-top),var(--btn-bot));
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.09),0 5px 0 var(--btn-edge),0 9px 16px -4px rgba(0,0,0,.7)}
+.rxs[aria-disabled="true"]{opacity:.35}
 </style>
 
 <div class="wrap" id="app">
@@ -314,8 +325,8 @@ body.part .wrap{flex:none}
 </div>
 
 <div class="rxfull" id="rx-full" hidden role="dialog" aria-modal="true" aria-label="Recept">
-  <div class="rxtop"><button class="rxback" id="rx-close" aria-label="Terug naar de recepten"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M11 5l-7 7 7 7"/></svg>Terug</button><span class="rxt" id="rx-toptitle"></span></div>
-  <div class="rxbody" id="rx-body"></div>
+  <div class="rxtop"><button class="rxback" id="rx-close" aria-label="Terug naar de recepten"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M11 5l-7 7 7 7"/></svg>Terug</button><span class="rxt" id="rx-toptitle"></span><span class="rxnav"><button class="rxback rxs" id="rx-up" aria-label="Omhoog scrollen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 15l6-6 6 6"/></svg></button><button class="rxback rxs" id="rx-down" aria-label="Omlaag scrollen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></button></span></div>
+  <div class="rxscroll" id="rx-scroll"><div class="rxbody" id="rx-body"></div></div>
 </div>
 <div class="alarm" id="rx-alarm" hidden role="alert"><div><h3>Timer klaar</h3><div id="rx-alarm-list"></div></div><button id="rx-alarm-stop">Stoppen</button></div>
 
@@ -969,7 +980,7 @@ function openRecipe(id, tile) {
   if (busy) return; busy = true;
   const go = () => {
     OPEN = id; const f = $("rx-full"); f.hidden = false; f.classList.remove("leave"); f.classList.add("enter");
-    renderRecipe(); f.scrollTop = 0; $("rx-toptitle").textContent = RECIPES.find(x => x.id === id).title;
+    renderRecipe(); $("rx-scroll").scrollTop = 0; updNav(); $("rx-toptitle").textContent = RECIPES.find(x => x.id === id).title;
     setTimeout(() => { f.classList.remove("enter"); tile && tile.classList.remove("launch"); busy = false; $("rx-close").focus({ preventScroll: true }); }, reduceMotion() ? 0 : 380);
   };
   if (tile && !reduceMotion()) { tile.classList.add("launch"); setTimeout(go, 170); } else go();
@@ -981,6 +992,32 @@ function closeRecipe() {
     const t = $("rx-tiles"); t.classList.remove("back"); void t.offsetWidth; t.classList.add("back"); };
   if (reduceMotion()) return done();
   f.classList.add("leave"); setTimeout(done, 270);
+}
+function updNav() {
+  const s = $("rx-scroll"); if (!s) return;
+  $("rx-up").setAttribute("aria-disabled", s.scrollTop <= 2);
+  $("rx-down").setAttribute("aria-disabled", s.scrollTop + s.clientHeight >= s.scrollHeight - 2);
+}
+function scrollRx(dir, btn) {
+  const s = $("rx-scroll");
+  const atEnd = dir > 0 ? s.scrollTop + s.clientHeight >= s.scrollHeight - 2 : s.scrollTop <= 2;
+  if (atEnd) return shake(btn);
+  s.scrollBy({ top: dir * s.clientHeight * .7, behavior: reduceMotion() ? "auto" : "smooth" });
+}
+function initRxScroll() {
+  const s = $("rx-scroll");
+  s.addEventListener("scroll", updNav, { passive: true });
+  // muiswiel altijd doorgeven (sommige achtergrond-apps sturen het niet als scroll door)
+  $("rx-full").addEventListener("wheel", e => { e.preventDefault(); s.scrollBy({ top: e.deltaY * (e.deltaMode === 1 ? 40 : 1) }); }, { passive: false });
+  // slepen met de muis om te scrollen
+  let drag = null, moved = false;
+  s.addEventListener("pointerdown", e => { if (e.pointerType !== "mouse" || e.button !== 0) return; drag = { y: e.clientY, top: s.scrollTop }; moved = false; });
+  window.addEventListener("pointermove", e => { if (!drag) return; const dy = e.clientY - drag.y; if (Math.abs(dy) > 6) { moved = true; s.classList.add("dragging"); } if (moved) s.scrollTop = drag.top - dy; });
+  window.addEventListener("pointerup", () => { if (drag) { drag = null; setTimeout(() => s.classList.remove("dragging"), 0); } });
+  s.addEventListener("click", e => { if (moved) { e.stopPropagation(); e.preventDefault(); moved = false; } }, true);
+  $("rx-up").addEventListener("click", e => scrollRx(-1, e.currentTarget));
+  $("rx-down").addEventListener("click", e => scrollRx(1, e.currentTarget));
+  document.addEventListener("keydown", e => { if (!OPEN) return; if (e.key === "ArrowDown" || e.key === "PageDown") { s.scrollBy({ top: 120 }); } if (e.key === "ArrowUp" || e.key === "PageUp") { s.scrollBy({ top: -120 }); } });
 }
 function shake(el) {
   if (!el) return; el.classList.remove("shake"); void el.offsetWidth; el.classList.add("shake");
@@ -1021,6 +1058,7 @@ function initRecipes() {
   document.addEventListener("keydown", e => { if (e.key === "Escape" && OPEN) closeRecipe(); });
   document.addEventListener("visibilitychange", () => { if (document.visibilityState === "visible") tickTimers(); });
   setInterval(tickTimers, 500);
+  initRxScroll();
   setView(VIEW);
 }
 
@@ -1054,6 +1092,7 @@ function applyLayout() {
       width: (pw / z) + "px", height: (ph / z) + "px", minHeight: "0", margin: "0" });
     const ultra = LAYOUT.indeling === "ultra" || (LAYOUT.indeling === "auto" && pw / ph >= 2.05 && pw / z >= 1500);
     if (ultra) w.dataset.layout = "ultra"; else delete w.dataset.layout;
+    fitOverlay(W * x / 100, H * y / 100, pw, ph, z);
     return;
   }
   w.style.position = w.style.left = w.style.top = "";
@@ -1068,9 +1107,22 @@ function applyLayout() {
   w.style.minHeight = (z !== 1 || hp < 100) ? "0" : "";
   w.style.marginLeft = pct < 100 && LAYOUT.positie !== "links" ? "auto" : "";
   w.style.marginRight = pct < 100 && LAYOUT.positie !== "rechts" ? "auto" : "";
+  { const W = innerWidth, H = innerHeight, pw = W * pct / 100, ph = H * hp / 100;
+    const bx = pct >= 100 ? 0 : LAYOUT.positie === "links" ? 0 : LAYOUT.positie === "rechts" ? W - pw : (W - pw) / 2;
+    const by = hp >= 100 ? 0 : LAYOUT.verticaal === "boven" ? 0 : LAYOUT.verticaal === "onder" ? H - ph : (H - ph) / 2;
+    fitOverlay(bx, by, pw, ph, z); }
   const r = (window.innerWidth * pct / 100) / Math.max(1, window.innerHeight * hp / 100);
   const ultra = LAYOUT.indeling === "ultra" || (LAYOUT.indeling === "auto" && r >= 2.05 && window.innerWidth * pct / 100 / z >= 1500);
   if (ultra) w.dataset.layout = "ultra"; else delete w.dataset.layout;
+}
+// recept en wekker blijven binnen hetzelfde vak als het scherm
+function fitOverlay(x, y, w, h, z) {
+  const f = $("rx-full"), a = $("rx-alarm"); if (!f) return;
+  const full = x === 0 && y === 0 && Math.abs(w - innerWidth) < 1 && Math.abs(h - innerHeight) < 1 && z === 1;
+  Object.assign(f.style, full ? { inset: "0", left: "", top: "", width: "", height: "", zoom: "" }
+    : { inset: "auto", left: (x / z) + "px", top: (y / z) + "px", width: (w / z) + "px", height: (h / z) + "px", zoom: z === 1 ? "" : z });
+  if (a) Object.assign(a.style, full ? { left: "", bottom: "", zoom: "" }
+    : { left: ((x + w / 2) / z) + "px", bottom: ((innerHeight - y - h + 24) / z) + "px", zoom: z === 1 ? "" : z });
 }
 window.addEventListener("resize", () => { applyLayout(); render(); });
 
