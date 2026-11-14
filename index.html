@@ -126,7 +126,7 @@ svg text{font-family:var(--f-mono)}
 .rxhead p{margin:0;color:var(--muted);font-size:15px}
 .rxnote{border:1px solid rgba(255,93,93,.45);background:rgba(255,93,93,.08);color:#ffd0d0;border-radius:3px;padding:12px 16px;font-size:16px;line-height:1.45}
 .rxnote b{color:#fff}
-.rtiles{flex:1;min-height:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px;align-content:stretch}
+.rtiles{flex:1;min-height:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));grid-auto-rows:minmax(max-content,1fr);gap:12px;align-content:stretch;overflow-y:auto;padding-top:10px;margin-top:-10px}
 .rtile{appearance:none;text-align:left;border:1px solid var(--line);background:var(--panel);border-radius:3px;padding:22px 22px 20px;color:var(--text);cursor:pointer;
   display:flex;flex-direction:column;gap:8px;min-height:180px;transition:border-color .15s,transform .08s;font-family:var(--f-ui)}
 .rtile:hover{border-color:var(--key-line)} .rtile:active{transform:scale(.985)}
@@ -809,7 +809,7 @@ function render() { renderEnergy(); renderClimate(); renderWeather(); renderPrin
 const WARN_MOEDER = "Moeder: geen vis of garnaal. Controleer het etiket op garnaal of trassi.";
 const RECIPES = [
   {
-    id: "rendang", title: "Rendang", when: "Vandaag koken", time: "± 3 uur",
+    id: "rendang", title: "Rendang", when: "Vr 13 nov koken", time: "± 3 uur",
     warn: [WARN_MOEDER + " Geldt voor de rendang-kruidenpasta."],
     ingr: [
       "1 kg rundvlees voor stoven (riblap of draadjesvlees) in blokken van 3-4 cm",
@@ -833,7 +833,7 @@ const RECIPES = [
     ],
   },
   {
-    id: "sate", title: "Kip saté met pindasaus", when: "Morgen, 18:00", time: "8-10 min grillen",
+    id: "sate", title: "Kip saté met pindasaus", when: "Za 14 nov, 18:00", time: "8-10 min grillen",
     warn: [WARN_MOEDER + " Geldt voor de sambal oelek en de satésaus of pindasaus."],
     ingr: [
       "800 g kipdijfilet in blokjes",
@@ -851,7 +851,7 @@ const RECIPES = [
     ],
   },
   {
-    id: "rijst", title: "Rijst en bijgerechten", when: "Morgen, 17:30-18:15", time: "± 45 min",
+    id: "rijst", title: "Rijst en bijgerechten", when: "Za 14 nov, 17:30-18:15", time: "± 45 min",
     warn: [WARN_MOEDER + " Geldt voor de sambal oelek en de atjar."],
     ingr: [
       "600 g rijst (jasmijn of basmati)",
@@ -875,7 +875,7 @@ const RECIPES = [
     ],
   },
   {
-    id: "tatin", title: "Tarte tatin", when: "Morgen, 15:30", sub: "cakevorm + muffinvorm", time: "± 1 uur",
+    id: "tatin", title: "Tarte tatin", when: "Za 14 nov, 15:30", sub: "cakevorm + muffinvorm", time: "± 1 uur",
     warn: [],
     ingr: [
       "8-10 stevige appels (Elstar, Jonagold of Goudreinette), geschild en in partjes",
@@ -893,6 +893,37 @@ const RECIPES = [
       { t: "Oven 200 °C: muffins 20-25 min, cakevorm 30-35 min.", timers: [[20, "Muffins"], [30, "Cakevorm"]] },
       { t: "5-10 min laten rusten, mes langs de rand, omkeren op een schaal.", timers: [5, 10] },
       { t: "Voor het toetje (19:45) 10 min opwarmen op 160-180 °C, daarna serveren met vanille-ijs, slagroom, karamelsaus, walnoten en speculaas.", timers: [10] },
+    ],
+  },
+  {
+    id: "appeltaart", title: "Appeltaart anders", when: "Za 14 nov", sub: "taartvorm 24 cm · deeg 1 uur rusten", serves: "Voor 8-10 personen (origineel recept)", time: "± 2 uur",
+    warn: [],
+    ingr: [
+      "Bodem: 125 g boter, koud",
+      "Bodem: 125 g witte basterdsuiker",
+      "Bodem: 1 ei",
+      "Bodem: 250 g bloem",
+      "Bodem: snuf zout",
+      "Vulling: 3 of 4 goudrenetten",
+      "Vulling: 30 g boter",
+      "Vulling: 100 g kristalsuiker",
+      "Vulling: 1 tl kaneelpoeder",
+      "Vulling: 2 eieren",
+      "Vulling: 1 volle el kweeperen- of abrikozenjam",
+    ],
+    steps: [
+      { t: "Snijd de boter in blokjes en meng deze in een ruime kom met behulp van twee messen door de basterdsuiker." },
+      { t: "Voeg het ei toe en roer kort door." },
+      { t: "Zeef de bloem samen met zout boven de kom en meng het met de messen (of uw vingertoppen) door de boter tot kruimeltjes." },
+      { t: "Kneed vlot tot een geheel, verpak het deeg in huishoudfolie en laat het minimaal een uur rusten in de koelkast.", timers: [[60, "Deeg rusten"]] },
+      { t: "Schil ondertussen de appels, verwijder de klokhuizen en snijd het vruchtvlees in mooie, dunne partjes." },
+      { t: "Vet een taartvorm (diameter 24 centimeter) in en verwarm de oven voor op 200 graden." },
+      { t: "Laat de boter smelten en wat afkoelen." },
+      { t: "Rol het deeg op een licht bebloemd werkblad uit en bedek de taartvorm ermee." },
+      { t: "Schik de appelpartjes in een waaiervorm over de bodem. Begin met de buitenste ring en leg de binnenste ring in tegengestelde richting. Neem hier de tijd voor; hoe netter de partjes in de vorm liggen, des te mooier de taart." },
+      { t: "Meng de gesmolten boter met de suiker, het kaneelpoeder en de eieren in een kom. Giet dit mengsel voorzichtig over de appels." },
+      { t: "Bak de taart een half uur op 200 graden in de oven. Bestrijk de taart terwijl hij nog heet is met de kweeperen- of abrikozenjam.", timers: [[30, "Appeltaart"]] },
+      { t: "Tip: Als u de jam eerst iets verwarmt, gaat het bestrijken wat makkelijker. De taart is erg lekker met slagroom, een dot crème fraîche of een bolletje vanille-ijs." },
     ],
   },
 ];
@@ -1035,7 +1066,7 @@ function renderRecipe() {
   $("rx-body").innerHTML = `
     <p class="rwhen">${esc(r.when)}${r.sub ? " · " + esc(r.sub) : ""} · <span class="mono">${esc(r.time)}</span></p>
     <h1>${esc(r.title)}</h1>
-    <p class="forwho">Voor 5 volwassenen en 2 kinderen (5 en 8 jaar)</p>
+    <p class="forwho">${esc(r.serves || "Voor 5 volwassenen en 2 kinderen (5 en 8 jaar)")}</p>
     ${r.warn.map(w => `<div class="warnbox">⚠ ${esc(w)}</div>`).join("")}
     <div class="okbox">Zwager: geen kaas. In dit recept zit geen kaas.</div>
     <h2>Ingrediënten</h2>
